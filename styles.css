@@ -477,6 +477,181 @@ a { color: var(--accent-2); }
 .sb-players-table th { color: var(--muted); font-weight: 500; font-size: 0.75rem; }
 .sb-players-table td:nth-child(n+3) { text-align: center; font-family: var(--mono); }
 
+/* Teams scouting board */
+.teams-panel { display: flex; flex-direction: column; gap: 14px; }
+.teams-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(10, 19, 33, 0.66);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.teams-search {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  padding: 9px 12px;
+}
+.teams-search:focus { outline: none; border-color: var(--accent-2); }
+.teams-controls__segments { display: flex; flex-wrap: wrap; gap: 8px; }
+.teams-controls__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.teams-sort { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.85rem; }
+.teams-sort__select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 6px 10px;
+}
+.teams-today { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.85rem; cursor: pointer; }
+.teams-today input { accent-color: var(--accent); }
+.teams-count {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.team-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(15, 25, 43, 0.92), rgba(12, 21, 35, 0.84));
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px;
+  color: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+.team-card:hover { transform: translateY(-2px); border-color: rgba(127, 215, 255, 0.32); box-shadow: var(--shadow); }
+.team-card:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.team-card__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.team-card__identity { display: flex; flex-direction: column; gap: 2px; }
+.team-card__name { font-weight: 700; letter-spacing: -0.02em; }
+.team-card__record { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
+.team-card__badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+
+.scout-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+}
+.scout-badge--is-up { color: var(--success); border-color: rgba(104, 227, 166, 0.4); }
+.scout-badge--is-down { color: var(--danger); border-color: rgba(255, 107, 107, 0.4); }
+.scout-badge--is-warn { color: var(--warning); border-color: rgba(255, 209, 102, 0.4); }
+.scout-badge--is-flat { color: var(--muted); }
+
+.team-card__net {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(151, 180, 215, 0.1);
+}
+.team-card__net.is-pos { border-color: rgba(104, 227, 166, 0.3); }
+.team-card__net.is-neg { border-color: rgba(255, 107, 107, 0.3); }
+.team-card__net-value { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.03em; }
+.team-card__net.is-pos .team-card__net-value { color: var(--success); }
+.team-card__net.is-neg .team-card__net-value { color: var(--danger); }
+.team-card__net-label { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.team-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.team-card__stat { display: flex; flex-direction: column; gap: 2px; }
+.team-card__stat-label { color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.team-card__stat-value { font-family: var(--mono); font-size: 0.9rem; }
+
+/* Team profile */
+.teams-panel--profile { gap: 16px; }
+.team-profile__topbar { display: flex; align-items: center; gap: 12px; }
+.team-profile__warn { color: var(--warning); font-size: 0.78rem; }
+.team-profile__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.team-profile__badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.team-profile__section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.team-profile__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.team-profile__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(151, 180, 215, 0.1);
+}
+.team-profile__stat-value { font-family: var(--mono); font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; }
+.team-profile__stat-label { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.team-profile__stat-sub { color: var(--muted); font-size: 0.72rem; }
+.team-profile__section--relevance { border-color: rgba(127, 215, 255, 0.2); }
+.team-profile__relevance {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.team-profile__relevance li {
+  position: relative;
+  padding: 8px 12px 8px 28px;
+  border-radius: 12px;
+  background: rgba(127, 215, 255, 0.06);
+  border: 1px solid rgba(127, 215, 255, 0.14);
+  font-size: 0.88rem;
+}
+.team-profile__relevance li::before {
+  content: "▹";
+  position: absolute;
+  left: 11px;
+  color: var(--accent-2);
+}
+.team-profile__players { margin-top: 10px; }
+
 @media (max-width: 980px) {
   .hero-strip { grid-template-columns: 1fr; }
 }

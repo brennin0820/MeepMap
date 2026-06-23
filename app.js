@@ -16,6 +16,10 @@
     scoreboardExpandedGameId: null,
     scoreboardTeamDetails: {},
     scoreboardPlayersCache: {},
+    teamsUI: { search: '', segment: 'all', sort: 'netRating', todayOnly: false, selectedTeamKey: null },
+    teamsDetails: {},
+    teamsPlayers: {},
+    playingTodayKeys: null,
   };
 
   async function fetchJson(path, options) {
@@ -27,6 +31,19 @@
 
   function $(sel) {
     return document.querySelector(sel);
+  }
+
+  function computePlayingTodayKeys(games) {
+    const keys = new Set();
+    const today = new Date().toISOString().slice(0, 10);
+    (games || []).forEach((g) => {
+      const date = (g.date || g.time || '').slice(0, 10);
+      if (date && date !== today) return;
+      [g.homeKey, g.awayKey, g.homeTeam?.key, g.awayTeam?.key].forEach((k) => {
+        if (k) keys.add(String(k).toLowerCase());
+      });
+    });
+    return keys;
   }
 
   function setMeta(text) {
@@ -61,6 +78,9 @@
         break;
       case 'games':
         renderGames();
+        break;
+      case 'teams':
+        renderTeams();
         break;
       case 'scoreboard':
         renderScoreboard();
@@ -110,6 +130,94 @@
       renderGames();
     });
     IntelligenceView.bindActions(panel, { onExplain: openExplanation, onWhatIf: () => switchTab('settings') });
+  }
+
+  async function loadTeamProfile(teamKey) {
+    if (!teamKey) return;
+    const key = teamKey;
+    if (state.teamsDetails[key] && !state.teamsDetails[key].error) {
+      if (!state.teamsPlayers[key]) loadTeamPlayers(key);
+      return;
+    }
+    state.teamsDetails = { ...state.teamsDetails, [key]: { loading: true } };
+    renderTeams();
+    try {
+      const data = await fetchJson(`/api/teams/${encodeURIComponent(key)}/stats`);
+      state.teamsDetails = { ...state.teamsDetails, [key]: { ...data, loading: false } };
+    } catch (err) {
+      state.teamsDetails = {
+        ...state.teamsDetails,
+        [key]: { loading: false, error: err.message || 'Team stats unavailable' },
+      };
+    }
+    renderTeams();
+    loadTeamPlayers(key);
+  }
+
+  async function loadTeamPlayers(teamKey) {
+    const key = teamKey;
+    if (state.teamsPlayers[key] && !state.teamsPlayers[key].error) return;
+    state.teamsPlayers = { ...state.teamsPlayers, [key]: { loading: true } };
+    renderTeams();
+    try {
+      const data = await fetchJson(`/api/teams/${encodeURIComponent(key)}/players`);
+      state.teamsPlayers = { ...state.teamsPlayers, [key]: { ...data, loading: false } };
+    } catch (err) {
+      state.teamsPlayers = {
+        ...state.teamsPlayers,
+        [key]: { loading: false, error: err.message || 'Player stats unavailable' },
+      };
+    }
+    renderTeams();
+  }
+
+  function getTeamsHandlers() {
+    return {
+      onSearch: (value) => {
+        state.teamsUI = { ...state.teamsUI, search: value };
+        renderTeams({ keepSearchFocus: true });
+      },
+      onSegment: (segment) => {
+        state.teamsUI = { ...state.teamsUI, segment };
+        renderTeams();
+      },
+      onSort: (sort) => {
+        state.teamsUI = { ...state.teamsUI, sort };
+        renderTeams();
+      },
+      onTodayToggle: (todayOnly) => {
+        state.teamsUI = { ...state.teamsUI, todayOnly };
+        renderTeams();
+      },
+      onOpenTeam: (teamKey) => {
+        state.teamsUI = { ...state.teamsUI, selectedTeamKey: teamKey };
+        renderTeams();
+        loadTeamProfile(teamKey);
+      },
+      onBack: () => {
+        state.teamsUI = { ...state.teamsUI, selectedTeamKey: null };
+        renderTeams();
+      },
+    };
+  }
+
+  function renderTeams(options = {}) {
+    const panel = $('#panel-teams');
+    if (!panel) return;
+    if (!state.teams || !state.teams.length) {
+      panel.innerHTML = '<p class="empty-state">Loading teams…</p>';
+      return;
+    }
+    panel.innerHTML = TeamsView.renderTeamsPanel(state);
+    TeamsView.bindTeamsActions(panel, getTeamsHandlers());
+    if (options.keepSearchFocus) {
+      const input = panel.querySelector('#teams-search');
+      if (input) {
+        input.focus();
+        const len = input.value.length;
+        input.setSelectionRange(len, len);
+      }
+    }
   }
 
   async function loadScoreboardTeamDetails(gameId) {
@@ -299,6 +407,7 @@
       ]);
       state.intelligence = { ...intel, lineupWatch };
       state.teams = teams.teams || [];
+      state.playingTodayKeys = computePlayingTodayKeys(intel.games);
       state.injuries = injuries;
       state.journal = journal.predictions || journal.entries || journal;
       state.bankroll = bankroll;
