@@ -1,0 +1,18 @@
+2026 WNBA Bet Predictor — Share Package
+
+Run locally:
+  npm install
+  npm start
+  Open http://localhost:3847
+
+Windows EXE (if built):
+  Double-click 2026-WNBA-Bet-Predictor.exe
+
+Predictions are statistical estimates only. They are not financial advice.
+Never bet money you cannot afford to lose.
+
+API highlights (local server on port 3847):
+  /api/intelligence          — decision dashboard
+  /api/intelligence/lineup-watch — games waiting on lineups
+  /api/grade                 — score completed predictions
+  /api/odds/movement         — line movement (requires odds provider)

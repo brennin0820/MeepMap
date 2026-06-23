@@ -1,0 +1,24 @@
+{
+  "source": "local-fallback",
+  "lastUpdated": "2026-06-21T00:00:00.000Z",
+  "injuries": [
+    {
+      "teamKey": "ind",
+      "teamName": "Indiana Fever",
+      "player": "Sample Player",
+      "playerId": null,
+      "status": "Questionable",
+      "detail": "Ankle — fallback data only; verify live source",
+      "date": "2026-06-20"
+    },
+    {
+      "teamKey": "las",
+      "teamName": "Las Vegas Aces",
+      "player": "Sample Player B",
+      "playerId": null,
+      "status": "Out",
+      "detail": "Rest — fallback data only; verify live source",
+      "date": "2026-06-19"
+    }
+  ]
+}

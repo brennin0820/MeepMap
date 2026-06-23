@@ -1,0 +1,45 @@
+name: WNBABetPredictor
+options:
+  bundleIdPrefix: com.brent
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    DEVELOPMENT_TEAM: Y7UUXVS2J4
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  WNBABetPredictor:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: WNBABetPredictor
+        excludes:
+          - Resources
+      - path: WNBABetPredictor/Resources
+        buildPhase: resources
+        includes:
+          - "*.json"
+    settings:
+      DEVELOPMENT_TEAM: Y7UUXVS2J4
+      CODE_SIGN_STYLE: Automatic
+      PRODUCT_BUNDLE_IDENTIFIER: com.brent.wnbabetpredictor
+      PRODUCT_NAME: WNBABetPredictor
+      MARKETING_VERSION: "1.5.0"
+      CURRENT_PROJECT_VERSION: "1"
+      INFOPLIST_KEY_CFBundleDisplayName: "WNBA Bet Predictor"
+      INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+      INFOPLIST_KEY_UILaunchScreen_Generation: YES
+      GENERATE_INFOPLIST_FILE: YES
+      INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsLocalNetworking: YES
+
+schemes:
+  WNBABetPredictor:
+    build:
+      targets:
+        WNBABetPredictor: all

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+ios/build/
+ios/dist/
+.DS_Store
+.cursor/
+.playwright-cli/
+*.xcuserstate
+DerivedData/

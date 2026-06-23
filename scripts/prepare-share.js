@@ -1,0 +1,67 @@
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const ROOT = path.join(__dirname, '..');
+const DIST = path.join(ROOT, 'dist');
+const SHARE = path.join(DIST, 'WNBA-Bet-Predictor-share');
+
+const INCLUDE = [
+  'index.html',
+  'app.js',
+  'styles.css',
+  'package.json',
+  'package-lock.json',
+  'SHARE.txt',
+  'js',
+  'server',
+  'data',
+  'scripts',
+];
+
+function copyRecursive(src, dest) {
+  const stat = fs.statSync(src);
+  if (stat.isDirectory()) {
+    fs.mkdirSync(dest, { recursive: true });
+    for (const name of fs.readdirSync(src)) {
+      if (name === 'node_modules') continue;
+      copyRecursive(path.join(src, name), path.join(dest, name));
+    }
+    return;
+  }
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(src, dest);
+}
+
+function main() {
+  if (fs.existsSync(SHARE)) {
+    fs.rmSync(SHARE, { recursive: true, force: true });
+  }
+  fs.mkdirSync(SHARE, { recursive: true });
+
+  for (const item of INCLUDE) {
+    const src = path.join(ROOT, item);
+    if (!fs.existsSync(src)) continue;
+    copyRecursive(src, path.join(SHARE, item));
+  }
+
+  if (!fs.existsSync(path.join(SHARE, 'SHARE.txt'))) {
+    fs.writeFileSync(
+      path.join(SHARE, 'SHARE.txt'),
+      `WNBA Bet Predictor — share bundle\n\n1. npm install\n2. npm start\n3. Open http://localhost:3847\n`
+    );
+  }
+
+  const zipPath = path.join(DIST, 'WNBA-Bet-Predictor-share.zip');
+  if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+  execSync(`cd "${DIST}" && zip -r "WNBA-Bet-Predictor-share.zip" "WNBA-Bet-Predictor-share"`, {
+    stdio: 'inherit',
+  });
+
+  console.log(`Share folder: ${SHARE}`);
+  console.log(`Share ZIP:    ${zipPath}`);
+}
+
+main();

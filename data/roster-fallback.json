@@ -1,0 +1,18 @@
+{
+  "source": "local-fallback",
+  "lastUpdated": "2026-06-21T00:00:00.000Z",
+  "rosters": {
+    "atl": [
+      { "id": "f1", "name": "Rhyne Howard", "position": "G", "jersey": "0", "status": "active", "injured": false },
+      { "id": "f2", "name": "Allisha Gray", "position": "G", "jersey": "15", "status": "active", "injured": false }
+    ],
+    "las": [
+      { "id": "f3", "name": "A'ja Wilson", "position": "F", "jersey": "22", "status": "active", "injured": false },
+      { "id": "f4", "name": "Chelsea Gray", "position": "G", "jersey": "12", "status": "active", "injured": false }
+    ],
+    "min": [
+      { "id": "f5", "name": "Napheesa Collier", "position": "F", "jersey": "24", "status": "active", "injured": false },
+      { "id": "f6", "name": "Kayla McBride", "position": "G", "jersey": "21", "status": "active", "injured": false }
+    ]
+  }
+}

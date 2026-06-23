@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 WNBA Bet Predictor</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="topbar__logo" aria-hidden="true">◆</span>
+        <div>
+          <h1 class="topbar__title">WNBA Bet Predictor</h1>
+          <p class="topbar__subtitle">2026 Intelligence Platform</p>
+        </div>
+      </div>
+      <div class="topbar__actions">
+        <span id="last-updated" class="topbar__meta">Loading…</span>
+        <button id="btn-refresh" class="btn btn--ghost" type="button" title="Refresh data">
+          <span class="btn__icon" aria-hidden="true">↻</span> Refresh
+        </button>
+        <button id="btn-grade" class="btn btn--ghost" type="button" title="Grade completed games">
+          Grade
+        </button>
+      </div>
+    </header>
+
+    <aside id="disclaimer" class="disclaimer" role="note">
+      <strong>Responsible betting:</strong>
+      This tool provides analytical guidance only — not financial advice.
+      Never bet more than you can afford to lose. Verify all data independently before wagering.
+      Past performance does not guarantee future results.
+    </aside>
+
+    <div id="global-alerts" class="global-alerts" aria-live="polite"></div>
+
+    <nav class="tabs" role="tablist" aria-label="Main navigation">
+      <button class="tabs__btn tabs__btn--active" role="tab" aria-selected="true" data-tab="intelligence" id="tab-intelligence">Command Center</button>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="games" id="tab-games">Games</button>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="scoreboard" id="tab-scoreboard">Scoreboard</button>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="matchup" id="tab-matchup">Matchup</button>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="injuries" id="tab-injuries">Injuries</button>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="journal" id="tab-journal">Journal</button>
+      <button class="tabs__btn" role="tab" aria-selected="false" data-tab="settings" id="tab-settings">Settings</button>
+    </nav>
+
+    <main class="main">
+      <section id="panel-intelligence" class="panel panel--active" role="tabpanel" aria-labelledby="tab-intelligence"></section>
+      <section id="panel-games" class="panel" role="tabpanel" aria-labelledby="tab-games" hidden></section>
+      <section id="panel-scoreboard" class="panel" role="tabpanel" aria-labelledby="tab-scoreboard" hidden></section>
+      <section id="panel-matchup" class="panel" role="tabpanel" aria-labelledby="tab-matchup" hidden></section>
+      <section id="panel-injuries" class="panel" role="tabpanel" aria-labelledby="tab-injuries" hidden></section>
+      <section id="panel-journal" class="panel" role="tabpanel" aria-labelledby="tab-journal" hidden></section>
+      <section id="panel-settings" class="panel" role="tabpanel" aria-labelledby="tab-settings" hidden></section>
+    </main>
+
+    <aside id="explanation-drawer" class="drawer drawer--closed" aria-hidden="true">
+      <div class="drawer__backdrop" data-close-drawer></div>
+      <div class="drawer__panel">
+        <header class="drawer__header">
+          <h2 class="drawer__title">Game Explanation</h2>
+          <button class="btn btn--icon" type="button" data-close-drawer aria-label="Close">×</button>
+        </header>
+        <div id="explanation-content" class="drawer__body"></div>
+      </div>
+    </aside>
+
+    <footer class="footer">
+      <span>Accuracy before picks · Local intelligence engine</span>
+      <span id="api-source" class="footer__source">—</span>
+    </footer>
+  </div>
+
+  <script src="js/alerts-ui.js"></script>
+  <script src="js/explanation-ui.js"></script>
+  <script src="js/what-if-view.js"></script>
+  <script src="js/intelligence-view.js"></script>
+  <script src="js/predictions-ui.js"></script>
+  <script src="js/scoreboard-view.js"></script>
+  <script src="js/matchup-view.js"></script>
+  <script src="js/injuries-view.js"></script>
+  <script src="js/journal-ui.js"></script>
+  <script src="js/settings-view.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

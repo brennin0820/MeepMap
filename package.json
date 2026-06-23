@@ -1,0 +1,35 @@
+{
+  "name": "wnba-bet-predictor-2026",
+  "version": "1.5.0",
+  "description": "2026 WNBA Bet Predictor — decision-driven betting intelligence platform",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "build:exe": "node scripts/build-exe.js",
+    "build:share": "node scripts/prepare-share.js",
+    "test:engine": "node scripts/test-engine.js",
+    "test:api": "node scripts/test-api.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  },
+  "pkg": {
+    "scripts": [
+      "server/**/*.js"
+    ],
+    "assets": [
+      "index.html",
+      "app.js",
+      "js/**/*",
+      "data/**/*",
+      "server/**/*",
+      "SHARE.txt"
+    ],
+    "targets": ["node18-win-x64"]
+  }
+}

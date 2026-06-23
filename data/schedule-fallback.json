@@ -1,0 +1,30 @@
+{
+  "source": "local-fallback",
+  "lastUpdated": "2026-06-21T00:00:00.000Z",
+  "events": [
+    {
+      "id": "fallback-1",
+      "date": "2026-06-22T00:00:00.000Z",
+      "name": "Minnesota Lynx at Las Vegas Aces",
+      "status": "Scheduled",
+      "statusState": "pre",
+      "homeTeam": { "key": "las", "name": "Las Vegas Aces" },
+      "awayTeam": { "key": "min", "name": "Minnesota Lynx" },
+      "homeScore": 0,
+      "awayScore": 0,
+      "venue": "Michelob ULTRA Arena"
+    },
+    {
+      "id": "fallback-2",
+      "date": "2026-06-23T00:00:00.000Z",
+      "name": "Indiana Fever at Atlanta Dream",
+      "status": "Scheduled",
+      "statusState": "pre",
+      "homeTeam": { "key": "atl", "name": "Atlanta Dream" },
+      "awayTeam": { "key": "ind", "name": "Indiana Fever" },
+      "homeScore": 0,
+      "awayScore": 0,
+      "venue": "Gateway Center Arena"
+    }
+  ]
+}
