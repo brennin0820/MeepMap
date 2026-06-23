@@ -26,7 +26,7 @@ struct GameDetailView: View {
             }
             .padding()
         }
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Game Detail")
         .navigationBarTitleDisplayMode(.inline)
     }

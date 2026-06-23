@@ -36,17 +36,12 @@ struct WhatIfView: View {
             Button {
                 Task { await runScenario() }
             } label: {
-                HStack {
+                HStack(spacing: 8) {
                     if isRunning { ProgressView().tint(.white) }
                     Text("Run Scenario")
-                        .fontWeight(.semibold)
                 }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(AppTheme.accentSecondary)
-                .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
+            .buttonStyle(PrimaryActionButtonStyle(gradient: AppTheme.accentSecondaryGradient))
             .disabled(isRunning)
 
             if let errorMessage {

@@ -231,7 +231,7 @@ struct SettingsView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Settings")
         .task {
             api.useOnDeviceEngine = true

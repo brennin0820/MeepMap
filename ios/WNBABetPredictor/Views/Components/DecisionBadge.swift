@@ -123,13 +123,20 @@ struct GameRowView: View {
                     if let marketCue {
                         Label(marketCue, systemImage: "line.3.horizontal.decrease.circle")
                     }
-                }
-                .font(.caption2)
-                .foregroundStyle(AppTheme.textSecondary)
-                .lineLimit(1)
+            }
+            .font(.caption2)
+            .foregroundStyle(AppTheme.textSecondary)
+            .lineLimit(1)
             }
         }
         .cardStyle()
+        .overlay(alignment: .leading) {
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(AppTheme.decisionColor(game.decision.decision))
+                .frame(width: 4)
+                .padding(.vertical, 14)
+                .padding(.leading, 1)
+        }
     }
 
     private var matchupTitle: String {

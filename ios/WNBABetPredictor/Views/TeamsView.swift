@@ -48,7 +48,7 @@ struct TeamsView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Team/s")
         .refreshable { await store.refresh() }
         .task {
@@ -327,7 +327,7 @@ private struct TeamProfileView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle(team.name)
         .navigationBarTitleDisplayMode(.inline)
         .task {

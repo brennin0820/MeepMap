@@ -24,19 +24,14 @@ struct MatchupView: View {
                 Button {
                     Task { await store.analyze(homeKey: homeKey, awayKey: awayKey) }
                 } label: {
-                    HStack {
+                    HStack(spacing: 8) {
                         if store.isLoading {
                             ProgressView().tint(.white)
                         }
                         Text(store.isLoading ? "Analyzing…" : "Analyze Matchup")
-                            .fontWeight(.semibold)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(AppTheme.accent)
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 }
+                .buttonStyle(PrimaryActionButtonStyle())
                 .disabled(store.isLoading)
 
                 if let error = store.errorMessage {
@@ -55,7 +50,7 @@ struct MatchupView: View {
             }
             .padding()
         }
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Matchup")
         .navigationDestination(for: GameIntelligence.self) { game in
             GameDetailView(game: game)

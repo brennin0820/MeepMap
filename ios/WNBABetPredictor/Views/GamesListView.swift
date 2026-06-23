@@ -40,7 +40,7 @@ struct GamesListView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Games")
         .refreshable { await store.refresh() }
     }

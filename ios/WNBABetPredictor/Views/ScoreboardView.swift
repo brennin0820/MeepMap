@@ -51,7 +51,7 @@ struct ScoreboardView: View {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Scoreboard")
         .refreshable { await store.refresh() }
         .task { await store.refresh() }
