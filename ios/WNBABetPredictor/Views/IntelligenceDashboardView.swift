@@ -31,7 +31,7 @@ struct IntelligenceDashboardView: View {
             }
             .padding()
         }
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Command Center")
         .refreshable { await store.refresh() }
         .task {
@@ -44,14 +44,7 @@ struct IntelligenceDashboardView: View {
     private var dailyReadSection: some View {
         if !store.games.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Label("Daily Read", systemImage: "scope")
-                        .font(.headline)
-                    Spacer()
-                    Text("\(store.games.count) games")
-                        .font(.caption)
-                        .foregroundStyle(AppTheme.textSecondary)
-                }
+                SectionHeader("Daily Read", systemImage: "scope", trailing: "\(store.games.count) games")
 
                 if let best = firstGame(for: .strongPick) ?? firstGame(for: .lean) {
                     dailyReadRow(
@@ -89,9 +82,7 @@ struct IntelligenceDashboardView: View {
         if let accuracy {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Text("Model Accuracy")
-                        .font(.headline)
-                    Spacer()
+                    SectionHeader("Model Accuracy", systemImage: "chart.bar.xaxis")
                     if let score = accuracy.localScore {
                         Text("Score \(score)")
                             .font(.headline.monospacedDigit())
@@ -180,10 +171,10 @@ struct IntelligenceDashboardView: View {
     private var summarySection: some View {
         if let summary = store.response?.summary {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                summaryTile("Best Bets", value: summary.strongPicks ?? 0, color: AppTheme.success)
-                summaryTile("Lean", value: summary.leans ?? 0, color: AppTheme.accentSecondary)
-                summaryTile("Pass", value: summary.pass ?? 0, color: AppTheme.textSecondary)
-                summaryTile("Wait", value: summary.wait ?? 0, color: AppTheme.warning)
+                StatTile(title: "Best Bets", value: "\(summary.strongPicks ?? 0)", color: AppTheme.success, systemImage: "checkmark.seal.fill")
+                StatTile(title: "Lean", value: "\(summary.leans ?? 0)", color: AppTheme.accentSecondary, systemImage: "arrow.up.right")
+                StatTile(title: "Pass", value: "\(summary.pass ?? 0)", color: AppTheme.textSecondary, systemImage: "hand.raised.fill")
+                StatTile(title: "Wait", value: "\(summary.wait ?? 0)", color: AppTheme.warning, systemImage: "clock.fill")
             }
         }
 
@@ -258,19 +249,6 @@ struct IntelligenceDashboardView: View {
                 .foregroundStyle(AppTheme.textSecondary)
         }
         .padding(.top, 8)
-    }
-
-    private func summaryTile(_ title: String, value: Int, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(AppTheme.textSecondary)
-            Text("\(value)")
-                .font(.title2.weight(.bold))
-                .foregroundStyle(color)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .cardStyle()
     }
 
     private func errorCard(_ message: String) -> some View {

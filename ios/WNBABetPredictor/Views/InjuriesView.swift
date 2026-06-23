@@ -40,7 +40,7 @@ struct InjuriesView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Injuries")
         .refreshable { await store.refresh() }
         .task { await store.refresh() }

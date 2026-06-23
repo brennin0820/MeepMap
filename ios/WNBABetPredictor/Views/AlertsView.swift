@@ -20,7 +20,7 @@ struct AlertsView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Alerts")
     }
 

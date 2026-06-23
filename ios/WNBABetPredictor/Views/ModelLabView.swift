@@ -27,7 +27,7 @@ struct ModelLabView: View {
             }
             .padding()
         }
-        .background(AppTheme.background)
+        .appBackground()
         .navigationTitle("Model Lab")
         .refreshable { await load() }
         .task { await load() }
