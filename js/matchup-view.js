@@ -15,14 +15,35 @@
       .join('');
   }
 
+  function renderRecentMatchups(matchups) {
+    if (!matchups?.length) return '';
+    return `
+      <div class="matchup-recent">
+        <label>Quick access</label>
+        <div class="matchup-recent__buttons">
+          ${matchups
+            .map(
+              (m, idx) => `
+            <button type="button" class="btn btn--secondary btn--sm matchup-quick" data-matchup-idx="${idx}">
+              ${escapeHtml(m.away)} @ ${escapeHtml(m.home)}
+            </button>
+          `
+            )
+            .join('')}
+        </div>
+      </div>`;
+  }
+
   function render(teams) {
     const opts = teamOptions(teams);
+    const recentMatchups = window.AutofillStorage?.getRecentMatchups?.(5) || [];
     return `
       <div class="matchup-panel">
         <header class="panel-header">
           <h2 class="panel-title">Matchup Analyzer</h2>
           <p class="panel-desc">Compare two teams with the intelligence engine.</p>
         </header>
+        ${renderRecentMatchups(recentMatchups)}
         <form id="matchup-form" class="matchup-form">
           <div class="form-row">
             <label for="matchup-away">Away team</label>
@@ -103,6 +124,40 @@
     bindMatchupForm(formEl, resultsEl, onSubmit) {
       if (!formEl || formEl.dataset.matchupLegacyBound) return;
       formEl.dataset.matchupLegacyBound = '1';
+
+      // Restore last matchup
+      const lastMatchup = window.AutofillStorage?.getLastMatchup?.();
+      if (lastMatchup) {
+        const awaySelect = formEl.querySelector('select[name="away"]');
+        const homeSelect = formEl.querySelector('select[name="home"]');
+        const spreadInput = formEl.querySelector('input[name="spread"]');
+        const totalInput = formEl.querySelector('input[name="total"]');
+
+        if (awaySelect) awaySelect.value = lastMatchup.away || '';
+        if (homeSelect) homeSelect.value = lastMatchup.home || '';
+        if (spreadInput && lastMatchup.spread) spreadInput.value = lastMatchup.spread;
+        if (totalInput && lastMatchup.total) totalInput.value = lastMatchup.total;
+      }
+
+      // Quick access button handlers
+      const container = formEl.closest('.matchup-panel');
+      if (container) {
+        container.addEventListener('click', (e) => {
+          if (e.target.classList.contains('matchup-quick')) {
+            e.preventDefault();
+            const idx = parseInt(e.target.dataset.matchupIdx, 10);
+            const matchups = window.AutofillStorage?.getRecentMatchups?.(5) || [];
+            const matchup = matchups[idx];
+            if (matchup) {
+              const awaySelect = formEl.querySelector('select[name="away"]');
+              const homeSelect = formEl.querySelector('select[name="home"]');
+              if (awaySelect) awaySelect.value = matchup.away || '';
+              if (homeSelect) homeSelect.value = matchup.home || '';
+            }
+          }
+        });
+      }
+
       formEl.addEventListener('submit', async (e) => {
         e.preventDefault();
         const fd = new FormData(formEl);
@@ -119,6 +174,15 @@
           }
           return;
         }
+
+        // Save to history before submission
+        window.AutofillStorage?.addMatchup?.({
+          away: payload.awayKey,
+          home: payload.homeKey,
+          spread: payload.spread,
+          total: payload.total,
+        });
+
         if (resultsEl) {
           resultsEl.innerHTML = '<p class="loading-inline">Analyzing matchup…</p>';
         }
