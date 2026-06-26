@@ -1,8 +1,10 @@
 'use strict';
 
-const HOME_COURT_ADV = 2.5;
-const B2B_PENALTY = 3.0;
-const THREE_IN_FOUR_PENALTY = 1.5;
+const {
+  HOME_COURT_ADV,
+  B2B_PENALTY,
+  THREE_IN_FOUR_PENALTY,
+} = require('./model-config');
 
 function parseDate(dateStr) {
   if (!dateStr) return null;

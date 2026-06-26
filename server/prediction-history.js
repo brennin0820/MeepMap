@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const MODEL_VERSION = 'v1.5.0';
+const { MODEL_VERSION } = require('./model-config');
 
 const HISTORY_PATH = path.join(__dirname, '..', 'data', 'prediction-history.json');
 
