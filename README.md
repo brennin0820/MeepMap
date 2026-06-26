@@ -31,10 +31,10 @@ history) is stored as JSON files in `DATA_DIR`.
 | `DATA_DIR` | bundled `./data`   | Writable directory for journal / bankroll / prediction history. |
 
 On first start, `DATA_DIR` is seeded from the bundled `./data` files, so a fresh
-volume begins with the shipped prediction history rather than an empty state.
-Writes are fail-safe: on a read-only filesystem the app keeps serving from seed
-data instead of crashing (persistence is simply disabled, with a console
-warning).
+volume begins with the shipped prediction history rather than an empty state. On
+a read-only filesystem the app never crashes: read endpoints keep serving the
+bundled seed data, while write endpoints (journal / bankroll) return an error
+instead of silently dropping the change.
 
 > **Persistence:** point `DATA_DIR` at a **persistent disk/volume**. Without one,
 > hosts with ephemeral filesystems will reset journal/bankroll/history on each

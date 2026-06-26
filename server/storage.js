@@ -61,11 +61,25 @@ function seedIfMissing(name) {
  * Read JSON state, falling back to `fallback` (value or factory) when the file
  * is missing or unreadable.
  */
+function readBundled(name) {
+  return JSON.parse(fs.readFileSync(path.join(BUNDLED_DATA_DIR, name), 'utf8'));
+}
+
 function readJson(name, fallback) {
   seedIfMissing(name);
   try {
     return JSON.parse(fs.readFileSync(filePath(name), 'utf8'));
   } catch {
+    // DATA_DIR copy missing/unreadable — e.g. a read-only volume that could
+    // not be seeded. Serve the bundled seed file before the empty default so
+    // the app still shows shipped state (e.g. prediction history).
+    if (DATA_DIR !== BUNDLED_DATA_DIR) {
+      try {
+        return readBundled(name);
+      } catch {
+        /* no bundled seed — fall through to the default */
+      }
+    }
     return typeof fallback === 'function' ? fallback() : fallback;
   }
 }
@@ -76,10 +90,20 @@ function readJson(name, fallback) {
  */
 function writeJson(name, data) {
   if (!writable) return false;
+  const target = filePath(name);
+  const tmp = `${target}.${process.pid}.tmp`;
   try {
-    fs.writeFileSync(filePath(name), JSON.stringify(data, null, 2));
+    // Write to a temp file then rename, so an interrupted write can't leave a
+    // truncated/corrupt JSON file behind (rename is atomic on most filesystems).
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
+    fs.renameSync(tmp, target);
     return true;
   } catch (err) {
+    try {
+      fs.rmSync(tmp, { force: true });
+    } catch {
+      /* ignore cleanup failure */
+    }
     writable = false;
     console.warn(
       `[storage] Write failed for ${name} (${err.message}). ` +

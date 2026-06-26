@@ -21,7 +21,9 @@ function loadBankroll() {
 
 function saveBankroll(data) {
   data.updatedAt = new Date().toISOString();
-  storage.writeJson(BANKROLL_FILE, data);
+  if (!storage.writeJson(BANKROLL_FILE, data)) {
+    throw new Error('Storage is read-only — bankroll change was not saved.');
+  }
   return data;
 }
 

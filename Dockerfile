@@ -5,8 +5,9 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install production dependencies first for better layer caching.
+# npm ci is deterministic and respects the committed lockfile.
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 # Copy the rest of the application.
 COPY . .

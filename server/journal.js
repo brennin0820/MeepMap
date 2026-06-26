@@ -15,7 +15,9 @@ function loadJournal() {
 
 function saveJournal(data) {
   data.updatedAt = new Date().toISOString();
-  storage.writeJson(JOURNAL_FILE, data);
+  if (!storage.writeJson(JOURNAL_FILE, data)) {
+    throw new Error('Storage is read-only — journal change was not saved.');
+  }
   return data;
 }
 

@@ -6,7 +6,7 @@ services:
     name: meepmap-wnba-predictor
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: node server/index.js
     healthCheckPath: /api/health
     autoDeploy: true
