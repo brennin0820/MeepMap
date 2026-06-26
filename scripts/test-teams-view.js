@@ -138,4 +138,63 @@ assert(!evilHtml.includes('<script>1</script>'), 'injury note must be escaped');
 assert(evilHtml.includes('&lt;b&gt;x&lt;/b&gt;'), 'player injury name must be escaped');
 assert(evilHtml.includes('&lt;i&gt;p&lt;/i&gt;'), 'player production name must be escaped');
 
+// --- renderSigil (cdn / local / initials fallback) ---------------------------
+const cdnBranding = {
+  hasBranding: true,
+  colors: { primary: '#e31837', secondary: '#5091cc', accent: '#5091cc', text: '#ffffff' },
+  sigil: { kind: 'cdn', value: 'https://a.espncdn.com/i/teamlogos/wnba/500/atl.png', alt: 'Atlanta Dream logo' },
+};
+const cdnHtml = T.renderSigil(cdnBranding, { key: 'atl', name: 'Atlanta Dream' });
+assert(cdnHtml.includes('team-sigil'), 'cdn sigil renders team-sigil');
+assert(cdnHtml.includes('https://a.espncdn.com/i/teamlogos/wnba/500/atl.png'), 'cdn sigil uses img src');
+assert(cdnHtml.includes('team-sigil--lg'), 'cdn sigil uses large size');
+
+const localBranding = {
+  hasBranding: true,
+  colors: { primary: '#002d62', secondary: '#e03a3e', accent: '#e03a3e', text: '#ffffff' },
+  sigil: { kind: 'local', value: 'assets/teams/ind/sigil.png', alt: 'Indiana Fever logo' },
+};
+const localHtml = T.renderSigil(localBranding, { key: 'ind', name: 'Indiana Fever' });
+assert(localHtml.includes('assets/teams/ind/sigil.png'), 'local sigil uses local path');
+
+const initialsHtml = T.renderSigil(null, { key: 'min', name: 'Minnesota Lynx' });
+assert(initialsHtml.includes('team-sigil--initials'), 'missing branding falls back to initials');
+assert(initialsHtml.includes('ML'), 'initials derived from team name');
+
+// --- renderCard includes branded sigil ---------------------------------------
+const brandedTeam = {
+  key: 'min',
+  name: 'Minnesota Lynx',
+  record: '13-3',
+  last5: '5-0',
+  last10: '9-1',
+  netRating: 14.7,
+  pace: 94.5,
+  offRating: 111.2,
+  defRating: 96.5,
+  homeRecord: '7-1',
+  awayRecord: '6-2',
+  branding: {
+    hasBranding: true,
+    colors: { primary: '#266092', secondary: '#79bc43', accent: '#79bc43', text: '#ffffff' },
+    sigil: { kind: 'local', value: 'assets/teams/min/sigil.png', alt: 'Minnesota Lynx logo' },
+  },
+};
+const cardHtml = T.renderCard(brandedTeam, { injuries: [], expandedTeamKey: null }, new Set());
+assert(cardHtml.includes('team-card--branded'), 'branded card has team-card--branded');
+assert(cardHtml.includes('team-color-rail'), 'branded card has color rail');
+assert(cardHtml.includes('team-badge'), 'branded card has team-badge');
+assert(cardHtml.includes('team-sigil'), 'branded card includes sigil');
+assert(cardHtml.includes('assets/teams/min/sigil.png'), 'branded card sigil uses local asset');
+
+// escape safety in sigil alt / malicious team name
+const evilBranding = {
+  hasBranding: true,
+  colors: { primary: '#000', secondary: '#fff', accent: '#fff', text: '#fff' },
+  sigil: { kind: 'cdn', value: 'https://example.com/logo.png', alt: '<script>evil</script>' },
+};
+const evilSigil = T.renderSigil(evilBranding, { key: 'x', name: '<b>x</b>' });
+assert(evilSigil.includes('&lt;script&gt;evil&lt;/script&gt;'), 'sigil alt must be escaped');
+assert(!evilSigil.includes('<script>evil</script>'), 'raw script in alt must not appear');
+
 console.log('Teams view tests passed');

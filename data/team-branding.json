@@ -1,97 +1,280 @@
 {
-  "_comment": "Team branding metadata — sigils, colors, and liveries. PREP SCAFFOLD ONLY: all values are intentionally empty/null so nothing renders until populated and wired on. Keyed by the same team `key` used in teams-fallback.json. See data/team-branding.README.md for the field contract.",
   "_schemaVersion": 1,
-  "source": "local-branding",
-  "lastUpdated": null,
+  "source": "espn",
+  "lastUpdated": "2026-06-26T06:07:15.121Z",
   "branding": {
     "atl": {
-      "_note": "SAMPLE / reference entry — shows every field populated. Other teams remain null until you fill them. Colors are the Atlanta Dream palette; the sigil/livery here are placeholder artwork, not official logos.",
       "name": "Atlanta Dream",
-      "colors": { "primary": "#E03A3E", "secondary": "#000000", "accent": "#C1D32F", "text": "#FFFFFF" },
+      "colors": {
+        "primary": "#e31837",
+        "secondary": "#5091cc",
+        "accent": "#5091cc",
+        "text": "#ffffff"
+      },
       "sigil": {
-        "local": "assets/teams/atl/sigil.svg",
+        "local": "assets/teams/atl/sigil.png",
         "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/atl.png",
-        "inlineSvg": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Atlanta Dream\"><rect width=\"64\" height=\"64\" rx=\"12\" fill=\"#E03A3E\"/><path d=\"M16 46 32 16l16 30h-7l-9-17-9 17z\" fill=\"#fff\"/><rect x=\"26\" y=\"40\" width=\"12\" height=\"4\" rx=\"2\" fill=\"#C1D32F\"/></svg>",
-        "alt": "Atlanta Dream sigil"
+        "inlineSvg": null,
+        "alt": "Atlanta Dream logo"
       },
       "livery": {
-        "local": "assets/teams/atl/livery.svg",
+        "local": null,
         "cdn": null,
         "inlineSvg": null,
-        "pattern": "diagonal-stripes"
+        "pattern": null
       }
     },
     "chi": {
       "name": "Chicago Sky",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#5091cd",
+        "secondary": "#ffd520",
+        "accent": "#ffd520",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/chi/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/chi.png",
+        "inlineSvg": null,
+        "alt": "Chicago Sky logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "con": {
       "name": "Connecticut Sun",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#f05023",
+        "secondary": "#0a2240",
+        "accent": "#0a2240",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/con/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/con.png",
+        "inlineSvg": null,
+        "alt": "Connecticut Sun logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "dal": {
       "name": "Dallas Wings",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#002b5c",
+        "secondary": "#c4d600",
+        "accent": "#c4d600",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/dal/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/dal.png",
+        "inlineSvg": null,
+        "alt": "Dallas Wings logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "ind": {
       "name": "Indiana Fever",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#002d62",
+        "secondary": "#e03a3e",
+        "accent": "#e03a3e",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/ind/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/ind.png",
+        "inlineSvg": null,
+        "alt": "Indiana Fever logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "las": {
       "name": "Las Vegas Aces",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#a7a8aa",
+        "secondary": "#000000",
+        "accent": "#000000",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/las/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/lv.png",
+        "inlineSvg": null,
+        "alt": "Las Vegas Aces logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "min": {
       "name": "Minnesota Lynx",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#266092",
+        "secondary": "#79bc43",
+        "accent": "#79bc43",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/min/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/min.png",
+        "inlineSvg": null,
+        "alt": "Minnesota Lynx logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "ny": {
       "name": "New York Liberty",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#86cebc",
+        "secondary": "#000000",
+        "accent": "#000000",
+        "text": "#000000"
+      },
+      "sigil": {
+        "local": "assets/teams/ny/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/ny.png",
+        "inlineSvg": null,
+        "alt": "New York Liberty logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "phx": {
       "name": "Phoenix Mercury",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#3c286e",
+        "secondary": "#fa4b0a",
+        "accent": "#fa4b0a",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/phx/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/phx.png",
+        "inlineSvg": null,
+        "alt": "Phoenix Mercury logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "sea": {
       "name": "Seattle Storm",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#2c5235",
+        "secondary": "#fee11a",
+        "accent": "#fee11a",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/sea/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/sea.png",
+        "inlineSvg": null,
+        "alt": "Seattle Storm logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "was": {
       "name": "Washington Mystics",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#e03a3e",
+        "secondary": "#002b5c",
+        "accent": "#002b5c",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/was/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/wsh.png",
+        "inlineSvg": null,
+        "alt": "Washington Mystics logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "gs": {
       "name": "Golden State Valkyries",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#b38fcf",
+        "secondary": "#000000",
+        "accent": "#000000",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/gs/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/gs.png",
+        "inlineSvg": null,
+        "alt": "Golden State Valkyries logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     },
     "tor": {
       "name": "Toronto Tempo",
-      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
-      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
-      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+      "colors": {
+        "primary": "#33476d",
+        "secondary": "#7b1b38",
+        "accent": "#7b1b38",
+        "text": "#ffffff"
+      },
+      "sigil": {
+        "local": "assets/teams/tor/sigil.png",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/tor.png",
+        "inlineSvg": null,
+        "alt": "Toronto Tempo logo"
+      },
+      "livery": {
+        "local": null,
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": null
+      }
     }
   }
 }
