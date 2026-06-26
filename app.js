@@ -224,6 +224,22 @@
       state.journal = await fetchJson('/api/journal');
       renderJournal();
     });
+    JournalUI.bindEntryActions(panel, {
+      onSettle: async (id, result) => {
+        await fetchJson(`/api/journal/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ result }),
+        });
+        state.journal = await fetchJson('/api/journal');
+        renderJournal();
+      },
+      onDelete: async (id) => {
+        await fetchJson(`/api/journal/${encodeURIComponent(id)}`, { method: 'DELETE' });
+        state.journal = await fetchJson('/api/journal');
+        renderJournal();
+      },
+    });
   }
 
   function renderSettings() {
@@ -300,7 +316,7 @@
       state.intelligence = { ...intel, lineupWatch };
       state.teams = teams.teams || [];
       state.injuries = injuries;
-      state.journal = journal.predictions || journal.entries || journal;
+      state.journal = journal;
       state.bankroll = bankroll;
       state.accuracy = gradeResult?.accuracy || accuracy;
       state.history = historyPayload.predictions || [];

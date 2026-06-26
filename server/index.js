@@ -364,6 +364,26 @@ app.post('/api/journal', (req, res) => {
   }
 });
 
+app.patch('/api/journal/:id', (req, res) => {
+  try {
+    const entry = journal.updateEntry(req.params.id, req.body || {});
+    if (!entry) return res.status(404).json({ error: 'Journal entry not found' });
+    res.json({ entry });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete('/api/journal/:id', (req, res) => {
+  try {
+    const removed = journal.deleteEntry(req.params.id);
+    if (!removed) return res.status(404).json({ error: 'Journal entry not found' });
+    res.json({ ok: true, id: req.params.id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/bankroll', (_req, res) => {
   res.json(bankroll.getBankroll());
 });
