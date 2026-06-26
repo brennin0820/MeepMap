@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run engine tests
+      run: npm run test:engine
+
+    - name: Run API smoke tests
+      env:
+        PORT: 3847
+        API_BASE: http://localhost:3847
+      run: |
+        node server/index.js &
+        SERVER_PID=$!
+        for i in $(seq 1 30); do
+          if curl -sf "$API_BASE/api/health" >/dev/null 2>&1 || curl -sf "$API_BASE/" >/dev/null 2>&1; then
+            break
+          fi
+          sleep 1
+        done
+        npm run test:api
+        STATUS=$?
+        kill $SERVER_PID 2>/dev/null || true
+        exit $STATUS
