@@ -1,19 +1,20 @@
 # Render Blueprint — deploy the WNBA Bet Predictor as a hosted web service.
-# 1. Push this repo to GitHub.
-# 2. In the Render dashboard: New + > Blueprint, and point it at this repo.
+# In the Render dashboard: New + > Blueprint, and point it at this repo.
 # Render reads this file, provisions the service + persistent disk, and deploys.
 services:
   - type: web
-    name: wnba-bet-predictor
+    name: meepmap-wnba-predictor
     runtime: node
     plan: free
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node server/index.js
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
       - key: NODE_VERSION
         value: "20"
+      - key: NODE_ENV
+        value: production
       # Writable, persistent location for journal / bankroll / prediction history.
       - key: DATA_DIR
         value: /var/data

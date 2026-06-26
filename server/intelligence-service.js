@@ -13,7 +13,7 @@ const { recordPrediction } = require('./prediction-history');
 const { volatilityIndex } = require('./volatility');
 const { computeHomeSpreadEdge } = require('./edge-math');
 
-const MODEL_VERSION = 'v1.5.0';
+const { MODEL_VERSION } = require('./model-config');
 
 const REASON_TEXT = {
   NET_RATING_EDGE: 'Net rating favors one side',

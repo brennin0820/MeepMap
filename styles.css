@@ -605,6 +605,53 @@ a { color: var(--accent-2); }
 .journal-form { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
 .journal-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
 
+.journal-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 4px 0 18px;
+}
+.journal-summary .summary-tile { margin-bottom: 0; }
+.summary-tile__count.is-positive, .journal-entry__profit.is-positive { color: var(--success); }
+.summary-tile__count.is-negative, .journal-entry__profit.is-negative { color: var(--danger); }
+
+.journal-entry__head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.journal-entry__line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 6px 0; }
+.journal-entry__profit { font-family: var(--mono); font-weight: 600; font-size: 0.85rem; }
+.journal-entry--won { border-left: 3px solid var(--success); }
+.journal-entry--lost { border-left: 3px solid var(--danger); }
+.journal-entry--push { border-left: 3px solid var(--warning); }
+
+.journal-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.journal-badge--won { color: var(--success); border-color: rgba(104, 227, 166, 0.5); background: rgba(104, 227, 166, 0.1); }
+.journal-badge--lost { color: var(--danger); border-color: rgba(255, 107, 107, 0.5); background: rgba(255, 107, 107, 0.1); }
+.journal-badge--push { color: var(--warning); border-color: rgba(255, 209, 102, 0.5); background: rgba(255, 209, 102, 0.1); }
+
+.journal-entry__actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.btn--mini {
+  font-size: 0.74rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+}
+.btn--mini:hover { border-color: var(--accent-2); }
+.btn--mini-active { border-color: var(--accent-2); color: var(--accent-2); font-weight: 700; }
+.btn--mini-danger { margin-left: auto; }
+.btn--mini-danger:hover { border-color: var(--danger); color: var(--danger); }
+
 @media (max-width: 720px) {
   .app { padding: 16px 14px 28px; }
   .topbar { padding: 16px; border-radius: 20px; }

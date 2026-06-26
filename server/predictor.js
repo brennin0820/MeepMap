@@ -4,9 +4,9 @@ const fatigue = require('./fatigue');
 const playerImpact = require('./player-impact');
 const odds = require('./odds');
 const { computeHomeSpreadEdge } = require('./edge-math');
+const config = require('./model-config');
 
-const MODEL_VERSION = 'v1.5.0';
-const SIM_MARGIN_STDDEV = 8.5;
+const { MODEL_VERSION, SIM_MARGIN_STDDEV } = config;
 
 function isValidDate(dateInput) {
   if (!dateInput) return false;
@@ -27,15 +27,159 @@ function findTeam(teams, key) {
 }
 
 function teamOffense(team) {
-  return team?.ppg ?? (team?.offRating ? team.offRating * 0.75 : 82);
+  return (
+    team?.ppg ??
+    (team?.offRating
+      ? team.offRating * (config.LEAGUE_AVERAGE_PACE / 100)
+      : config.LEAGUE_AVERAGE_POINTS)
+  );
 }
 
 function teamDefense(team) {
-  return team?.oppPpg ?? (team?.defRating ? team.defRating * 0.75 : 82);
+  return (
+    team?.oppPpg ??
+    (team?.defRating
+      ? team.defRating * (config.LEAGUE_AVERAGE_PACE / 100)
+      : config.LEAGUE_AVERAGE_POINTS)
+  );
+}
+
+function recordWinRate(record) {
+  if (!record || typeof record !== 'string') return null;
+  const m = record.trim().match(/^(\d+)-(\d+)$/);
+  if (!m) return null;
+  const wins = Number(m[1]);
+  const losses = Number(m[2]);
+  const total = wins + losses;
+  if (total === 0) return null;
+  return wins / total;
+}
+
+function expectedPace(home, away) {
+  const homePace = home?.pace;
+  const awayPace = away?.pace;
+  if (typeof homePace === 'number' && typeof awayPace === 'number') {
+    return +((homePace + awayPace) / 2).toFixed(1);
+  }
+  if (typeof homePace === 'number') {
+    return +((homePace + config.LEAGUE_AVERAGE_PACE) / 2).toFixed(1);
+  }
+  if (typeof awayPace === 'number') {
+    return +((config.LEAGUE_AVERAGE_PACE + awayPace) / 2).toFixed(1);
+  }
+  return null;
+}
+
+function baselineScores(home, away, pace) {
+  const homeOff = home?.offRating;
+  const awayDef = away?.defRating;
+  const awayOff = away?.offRating;
+  const homeDef = home?.defRating;
+  if (
+    homeOff != null &&
+    awayDef != null &&
+    awayOff != null &&
+    homeDef != null
+  ) {
+    const p = pace ?? config.LEAGUE_AVERAGE_PACE;
+    const homePer100 = homeOff * config.OFFENSE_WEIGHT + awayDef * config.DEFENSE_WEIGHT;
+    const awayPer100 = awayOff * config.OFFENSE_WEIGHT + homeDef * config.DEFENSE_WEIGHT;
+    return {
+      home: (homePer100 * p) / 100,
+      away: (awayPer100 * p) / 100,
+    };
+  }
+  return {
+    home: (teamOffense(home) + teamDefense(away)) / 2,
+    away: (teamDefense(home) + teamOffense(away)) / 2,
+  };
+}
+
+function venueAdjustment(home, away) {
+  const homeRate = recordWinRate(home?.homeRecord);
+  const awayRate = recordWinRate(away?.awayRecord);
+  if (homeRate == null || awayRate == null) return { home: 0, away: 0 };
+  const diff = Math.max(
+    -config.WIN_RATE_DIFF_CAP,
+    Math.min(config.WIN_RATE_DIFF_CAP, homeRate - awayRate)
+  );
+  return {
+    home: diff * config.VENUE_HOME_MULT,
+    away: -diff * config.VENUE_AWAY_MULT,
+  };
+}
+
+function formAdjustment(home, away) {
+  const homeForm = recordWinRate(home?.last5);
+  const awayForm = recordWinRate(away?.last5);
+  if (homeForm == null || awayForm == null) return { home: 0, away: 0 };
+  const diff = Math.max(
+    -config.WIN_RATE_DIFF_CAP,
+    Math.min(config.WIN_RATE_DIFF_CAP, homeForm - awayForm)
+  );
+  return { home: diff * config.FORM_MULT, away: -diff * config.FORM_MULT };
+}
+
+function marginAdjustment(home, away) {
+  const homeMargin = home?.avgMargin;
+  const awayMargin = away?.avgMargin;
+  if (homeMargin == null || awayMargin == null) return { home: 0, away: 0 };
+  const diff = Math.max(
+    -config.MARGIN_DIFF_CAP,
+    Math.min(config.MARGIN_DIFF_CAP, homeMargin - awayMargin)
+  );
+  const adj = Math.max(
+    -config.MARGIN_ADJ_CAP,
+    Math.min(config.MARGIN_ADJ_CAP, diff * config.MARGIN_ADJ_RATE)
+  );
+  return { home: adj, away: -adj };
 }
 
 function logisticWinProb(margin) {
-  return 1 / (1 + Math.exp(-margin / 6));
+  return 1 / (1 + Math.exp(-margin / config.LOGISTIC_MARGIN_DIVISOR));
+}
+
+function clampScore(score) {
+  return +Math.max(config.SCORE_MIN, Math.min(config.SCORE_MAX, score)).toFixed(1);
+}
+
+function computeScores(home, away, options = {}) {
+  const {
+    homeFatigue = { fatiguePenalty: 0, homeCourtBonus: 0 },
+    awayFatigue = { fatiguePenalty: 0, homeCourtBonus: 0 },
+    homeInjuryPenalty = 0,
+    awayInjuryPenalty = 0,
+    neutralCourt = false,
+  } = options;
+
+  const pace = expectedPace(home, away);
+  const baseline = baselineScores(home, away, pace);
+  const venue = venueAdjustment(home, away);
+  const form = formAdjustment(home, away);
+  const marginAdj = marginAdjustment(home, away);
+
+  let homeScore = baseline.home;
+  let awayScore = baseline.away;
+
+  if (!neutralCourt) {
+    homeScore += homeFatigue.homeCourtBonus || 0;
+  }
+  homeScore -= homeFatigue.fatiguePenalty || 0;
+  awayScore -= awayFatigue.fatiguePenalty || 0;
+  homeScore -= homeInjuryPenalty;
+  awayScore -= awayInjuryPenalty;
+  homeScore += venue.home + form.home + marginAdj.home;
+  awayScore += venue.away + form.away + marginAdj.away;
+
+  return {
+    homeScore: clampScore(homeScore),
+    awayScore: clampScore(awayScore),
+    pace,
+    baseline,
+    venue,
+    form,
+    marginAdj,
+  };
 }
 
 function buildDisabledPrediction(reason, meta = {}) {
@@ -84,25 +228,23 @@ async function predictMatchup({
   );
 
   const impact = await playerImpact.getMatchupImpact(homeKey, awayKey);
+  const homeInjuryPenalty = Math.min(
+    config.INJURY_CAP,
+    impact.home.impactPoints * config.INJURY_SCALE
+  );
+  const awayInjuryPenalty = Math.min(
+    config.INJURY_CAP,
+    impact.away.impactPoints * config.INJURY_SCALE
+  );
 
-  const homeBase = teamOffense(home);
-  const awayBase = teamOffense(away);
-  const homeDef = teamDefense(home);
-  const awayDef = teamDefense(away);
+  const scores = computeScores(home, away, {
+    homeFatigue,
+    awayFatigue,
+    homeInjuryPenalty,
+    awayInjuryPenalty,
+  });
 
-  let homeScore = (homeBase + awayDef) / 2 + homeFatigue.homeCourtBonus;
-  let awayScore = (awayBase + homeDef) / 2;
-
-  homeScore -= homeFatigue.fatiguePenalty;
-  awayScore -= awayFatigue.fatiguePenalty;
-
-  const injuryCap = 6;
-  homeScore -= Math.min(injuryCap, impact.home.impactPoints * 0.35);
-  awayScore -= Math.min(injuryCap, impact.away.impactPoints * 0.35);
-
-  homeScore = +Math.max(72, Math.min(105, homeScore)).toFixed(1);
-  awayScore = +Math.max(72, Math.min(105, awayScore)).toFixed(1);
-
+  const { homeScore, awayScore } = scores;
   const margin = +(homeScore - awayScore).toFixed(1);
   const total = +(homeScore + awayScore).toFixed(1);
   const winProb = {
@@ -130,6 +272,11 @@ async function predictMatchup({
     odds: oddsData.available ? oddsData.lines : null,
     oddsWarning: oddsData.warning,
     factors: {
+      expectedPace: scores.pace,
+      baseline: scores.baseline,
+      venue: scores.venue,
+      form: scores.form,
+      marginAdj: scores.marginAdj,
       fatigue: { home: homeFatigue, away: awayFatigue },
       injuryImpact: impact,
     },
@@ -193,9 +340,9 @@ async function simulateMatchup({
     gameDate: prediction.gameDate,
     projectedMargin: margin,
     projectedTotal: totalMean,
-    homeWinPct: +(homeWins / n * 100).toFixed(1),
-    homeCoverPct: spreadLine != null ? +(homeCovers / n * 100).toFixed(1) : null,
-    overPct: totalLine != null ? +(overHits / n * 100).toFixed(1) : null,
+    homeWinPct: +((homeWins / n) * 100).toFixed(1),
+    homeCoverPct: spreadLine != null ? +((homeCovers / n) * 100).toFixed(1) : null,
+    overPct: totalLine != null ? +((overHits / n) * 100).toFixed(1) : null,
     spread: spreadLine,
     total: totalLine,
     note: 'Monte Carlo from model projection — not market odds',
@@ -295,8 +442,8 @@ function projectMatchup({
   game,
   homeRoster,
   awayRoster,
-  fatigue,
-  odds,
+  fatigue: fatigueInput,
+  odds: oddsInput,
   neutralCourt,
 }) {
   if (!homeTeam || !awayTeam) {
@@ -304,29 +451,21 @@ function projectMatchup({
       buildDisabledPrediction('Missing team data'),
       homeTeam,
       awayTeam,
-      odds
+      oddsInput
     );
   }
 
-  const homeBase = teamOffense(homeTeam);
-  const awayBase = teamOffense(awayTeam);
-  const homeDef = teamDefense(homeTeam);
-  const awayDef = teamDefense(awayTeam);
+  const homeFatigue = fatigueInput?.home || {
+    fatiguePenalty: 0,
+    homeCourtBonus: config.HOME_COURT_ADV,
+  };
+  const awayFatigue = fatigueInput?.away || { fatiguePenalty: 0, homeCourtBonus: 0 };
 
-  const homeFatigue = fatigue?.home || { fatiguePenalty: 0, homeCourtBonus: 2.5 };
-  const awayFatigue = fatigue?.away || { fatiguePenalty: 0, homeCourtBonus: 0 };
-
-  let homeScore = (homeBase + awayDef) / 2;
-  let awayScore = (awayBase + homeDef) / 2;
-
-  if (!neutralCourt) {
-    homeScore += homeFatigue.homeCourtBonus || 2.5;
-  }
-  homeScore -= homeFatigue.fatiguePenalty || 0;
-  awayScore -= awayFatigue.fatiguePenalty || 0;
-
-  homeScore = +Math.max(72, Math.min(105, homeScore)).toFixed(1);
-  awayScore = +Math.max(72, Math.min(105, awayScore)).toFixed(1);
+  const { homeScore, awayScore } = computeScores(homeTeam, awayTeam, {
+    homeFatigue,
+    awayFatigue,
+    neutralCourt,
+  });
 
   const margin = +(homeScore - awayScore).toFixed(1);
   const total = +(homeScore + awayScore).toFixed(1);
@@ -342,7 +481,7 @@ function projectMatchup({
     total,
   };
 
-  return toIntelligencePrediction(raw, homeTeam, awayTeam, odds);
+  return toIntelligencePrediction(raw, homeTeam, awayTeam, oddsInput);
 }
 
 async function predictUpcomingGames({
@@ -388,7 +527,7 @@ async function predictUpcomingGames({
       priorGames
     );
 
-    const odds = oddsMap[event.id] || null;
+    const oddsForGame = oddsMap[event.id] || null;
 
     let prediction;
     try {
@@ -400,7 +539,7 @@ async function predictUpcomingGames({
         priorGames,
         eventId: event.id,
       });
-      prediction = toIntelligencePrediction(raw, homeTeam, awayTeam, odds);
+      prediction = toIntelligencePrediction(raw, homeTeam, awayTeam, oddsForGame);
     } catch {
       prediction = projectMatchup({
         homeTeam,
@@ -409,7 +548,7 @@ async function predictUpcomingGames({
         homeRoster,
         awayRoster,
         fatigue: fatigueResult,
-        odds,
+        odds: oddsForGame,
       });
     }
 
@@ -420,14 +559,13 @@ async function predictUpcomingGames({
       homeRoster,
       awayRoster,
       fatigue: fatigueResult,
-      odds,
+      odds: oddsForGame,
       prediction,
     });
   }
 
   return gamesData;
 }
-
 
 module.exports = {
   MODEL_VERSION,

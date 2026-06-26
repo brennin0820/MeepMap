@@ -20,6 +20,7 @@ const { buildLineupWatchPayload } = require('./lineup-watch');
 const { gradeCompletedGames } = require('./post-game-grader');
 const oddsMod = require('./odds');
 const scoreboardMod = require('./scoreboard');
+const modelConfig = require('./model-config');
 const teamStatsMod = require('./team-stats');
 const playerStatsMod = require('./player-stats');
 
@@ -55,7 +56,7 @@ app.get('/api/health', (_req, res) => {
   res.json({
     status: 'healthy',
     service: 'wnba-bet-predictor',
-    modelVersion: predictor.MODEL_VERSION,
+    ...modelConfig.modelInfo(),
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
@@ -333,8 +334,7 @@ app.get('/api/intelligence/health', async (_req, res) => {
     res.json({
       sources: dataFetcher.getSourceHealth(),
       meta: teamsResult,
-      modelVersion: predictor.MODEL_VERSION,
-      predictionEngine: 'rule-based',
+      ...modelConfig.modelInfo(),
       dataQualityEngine: 'v1.1',
       status: intelligenceService.getHealth().status,
     });
@@ -359,6 +359,26 @@ app.post('/api/journal', (req, res) => {
   try {
     const entry = journal.addEntry(req.body || {});
     res.status(201).json({ entry });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/journal/:id', (req, res) => {
+  try {
+    const entry = journal.updateEntry(req.params.id, req.body || {});
+    if (!entry) return res.status(404).json({ error: 'Journal entry not found' });
+    res.json({ entry });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.delete('/api/journal/:id', (req, res) => {
+  try {
+    const removed = journal.deleteEntry(req.params.id);
+    if (!removed) return res.status(404).json({ error: 'Journal entry not found' });
+    res.json({ ok: true, id: req.params.id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

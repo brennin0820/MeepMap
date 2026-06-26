@@ -1,5 +1,5 @@
 const storage = require('./storage');
-const MODEL_VERSION = 'v1.5.0';
+const { MODEL_VERSION } = require('./model-config');
 
 const HISTORY_FILE = 'prediction-history.json';
 
