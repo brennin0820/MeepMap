@@ -17,6 +17,10 @@
     scoreboardExpandedGameId: null,
     scoreboardTeamDetails: {},
     scoreboardPlayersCache: {},
+    teamsFilter: { search: '', segment: 'all', sort: 'netRating', today: false },
+    expandedTeamKey: null,
+    teamDetails: {},
+    teamPlayersCache: {},
   };
 
   async function fetchJson(path, options) {
@@ -73,6 +77,9 @@
         break;
       case 'scoreboard':
         renderScoreboard();
+        break;
+      case 'teams':
+        renderTeams();
         break;
       case 'matchup':
         renderMatchup();
@@ -189,6 +196,110 @@
     });
   }
 
+  function teamsTodayKeys() {
+    const games = ScoreboardView.gamesFromPayload(state.scoreboard);
+    const keys = [];
+    games.forEach((g) => {
+      const hk = g.homeTeam?.key || g.homeKey;
+      const ak = g.awayTeam?.key || g.awayKey;
+      if (hk) keys.push(String(hk).toLowerCase());
+      if (ak) keys.push(String(ak).toLowerCase());
+    });
+    return keys;
+  }
+
+  function renderTeams() {
+    const panel = $('#panel-teams');
+    if (!panel) return;
+
+    // Preserve focus/caret across the full-panel re-render (search box typing).
+    const active = document.activeElement;
+    const focusId = active && panel.contains(active) ? active.id : null;
+    const caret =
+      focusId && typeof active.selectionStart === 'number' ? active.selectionStart : null;
+
+    panel.innerHTML = TeamsView.renderTeamsPanel({
+      teams: state.teams,
+      injuries: state.injuries?.injuries || [],
+      todayKeys: teamsTodayKeys(),
+      filter: state.teamsFilter,
+      expandedTeamKey: state.expandedTeamKey,
+      teamDetails: state.teamDetails,
+      playersCache: state.teamPlayersCache,
+    });
+
+    TeamsView.bindTeamsActions(panel, {
+      onFilterChange: (partial) => {
+        state.teamsFilter = { ...state.teamsFilter, ...partial };
+        renderTeams();
+      },
+      onToggleTeam: (key, expand) => {
+        state.expandedTeamKey = expand ? String(key).toLowerCase() : null;
+        renderTeams();
+        if (expand) loadTeamProfile(key);
+      },
+    });
+
+    if (focusId) {
+      const el = panel.querySelector(`#${focusId}`);
+      if (el) {
+        el.focus();
+        if (caret != null && typeof el.setSelectionRange === 'function') {
+          try {
+            el.setSelectionRange(caret, caret);
+          } catch (_e) {
+            /* type=search may reject in some browsers — ignore */
+          }
+        }
+      }
+    }
+  }
+
+  async function loadTeamProfile(key) {
+    const k = String(key).toLowerCase();
+    const have = (entry) => entry && (entry.loaded || entry.loading);
+    const needDetail = !have(state.teamDetails[k]);
+    const needPlayers = !have(state.teamPlayersCache[k]);
+    if (!needDetail && !needPlayers) return;
+
+    if (needDetail) state.teamDetails = { ...state.teamDetails, [k]: { teamKey: k, loading: true } };
+    if (needPlayers)
+      state.teamPlayersCache = { ...state.teamPlayersCache, [k]: { teamKey: k, loading: true } };
+    renderTeams();
+
+    await Promise.all([
+      needDetail
+        ? fetchJson(`/api/teams/${encodeURIComponent(k)}/stats`)
+            .then((data) => {
+              state.teamDetails = { ...state.teamDetails, [k]: { ...data, teamKey: k, loaded: true } };
+            })
+            .catch((err) => {
+              state.teamDetails = {
+                ...state.teamDetails,
+                [k]: { teamKey: k, loaded: true, error: err.message || 'Stats unavailable' },
+              };
+            })
+        : Promise.resolve(),
+      needPlayers
+        ? fetchJson(`/api/teams/${encodeURIComponent(k)}/players`)
+            .then((data) => {
+              state.teamPlayersCache = {
+                ...state.teamPlayersCache,
+                [k]: { ...data, teamKey: k, loaded: true },
+              };
+            })
+            .catch((err) => {
+              state.teamPlayersCache = {
+                ...state.teamPlayersCache,
+                [k]: { teamKey: k, players: [], warning: err.message || 'Players unavailable', loaded: true },
+              };
+            })
+        : Promise.resolve(),
+    ]);
+
+    if (state.expandedTeamKey === k) renderTeams();
+  }
+
   function renderMatchup() {
     const panel = $('#panel-matchup');
     if (!panel) return;
@@ -205,8 +316,9 @@
         const h2h = await fetchJson(`/api/h2h?teamA=${encodeURIComponent(payload.awayKey)}&teamB=${encodeURIComponent(payload.homeKey)}&days=60`).catch(() => null);
         let html = MatchupView.renderMatchupResult(analysis.analysis || analysis);
         if (h2h?.matchups?.length) {
+          const esc = AlertsUI.escapeHtml;
           html += `<section class="h2h-section"><h4>Head-to-head</h4><ul>${h2h.matchups
-            .map((m) => `<li>${(m.date || '').slice(0, 10)} — ${m.awayTeam?.name} @ ${m.homeTeam?.name}</li>`)
+            .map((m) => `<li>${esc((m.date || '').slice(0, 10))} — ${esc(m.awayTeam?.name || '')} @ ${esc(m.homeTeam?.name || '')}</li>`)
             .join('')}</ul></section>`;
         }
         return html;
@@ -342,6 +454,9 @@
       state.scoreboard = scoreboard;
       state.scoreboardPlayersCache = {};
       state.scoreboardTeamDetails = {};
+      state.teamDetails = {};
+      state.teamPlayersCache = {};
+      state.expandedTeamKey = null;
       AlertsUI.mountGlobalAlerts($('#global-alerts'), intel.alerts);
       window.meepmap?.notifyAlerts?.(intel.alerts);
       setMeta(`Updated ${new Date().toLocaleTimeString()}`);

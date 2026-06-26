@@ -13,6 +13,8 @@
 		17559B3741811870ADD4A959 /* LocalDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C8EF06401342B11072D559 /* LocalDataService.swift */; };
 		232DF2B7CF9B908375A11300 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4169600AF1FF8632B650AB3 /* Alert.swift */; };
 		252497F30C41DB2B53007D3C /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C7B56439CEAEA6039D0CA2 /* AppTheme.swift */; };
+		3551EC9205EF141916062B5B /* BankrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0537DE762B3407CEA8FB6D38 /* BankrollView.swift */; };
+		C922BDEDAAB4161E0EBCE9AA /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6110BC7E151467704D4F034A /* JournalView.swift */; };
 		283DEE8D64BB3395817E395A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1914FB1D05A67C655E8C3EEF /* SettingsView.swift */; };
 		34C4DE6FFB232EB2DB4464E6 /* LocalDataQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFB92C00C1BB56EAD72DC928 /* LocalDataQuality.swift */; };
 		3BE2B1F4EE86C72B1E90DE95 /* WNBABetPredictorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E86D86BB223A2DD4DE12AA /* WNBABetPredictorApp.swift */; };
@@ -50,6 +52,8 @@
 
 /* Begin PBXFileReference section */
 		04647269EE045CCA4641FC84 /* AlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsView.swift; sourceTree = "<group>"; };
+		0537DE762B3407CEA8FB6D38 /* BankrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankrollView.swift; sourceTree = "<group>"; };
+		6110BC7E151467704D4F034A /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
 		0501CA5C9A1BA1FB895F658F /* PlayerStatsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsRow.swift; sourceTree = "<group>"; };
 		077250833F852B2C0026D934 /* GameIntelligence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameIntelligence.swift; sourceTree = "<group>"; };
 		17BA74FAFF41DD4DE110449A /* TeamsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsStore.swift; sourceTree = "<group>"; };
@@ -97,10 +101,12 @@
 			isa = PBXGroup;
 			children = (
 				04647269EE045CCA4641FC84 /* AlertsView.swift */,
+				0537DE762B3407CEA8FB6D38 /* BankrollView.swift */,
 				BF7B331ED96EB1BAD96F5FAB /* GameDetailView.swift */,
 				C76D4FB86F7CDFFB125976A4 /* GamesListView.swift */,
 				46C9EA36F7C63FDE30055529 /* InjuriesView.swift */,
 				73F8FDBFB4DDA8B8BC84E9B0 /* IntelligenceDashboardView.swift */,
+				6110BC7E151467704D4F034A /* JournalView.swift */,
 				4D3F31EDE45E9B969580131E /* MatchupView.swift */,
 				DCB3B1F987493AF3AA11A061 /* ModelLabView.swift */,
 				0501CA5C9A1BA1FB895F658F /* PlayerStatsRow.swift */,
@@ -290,6 +296,7 @@
 				232DF2B7CF9B908375A11300 /* Alert.swift in Sources */,
 				15FEC17343AF399D1FAA8824 /* AlertsView.swift in Sources */,
 				252497F30C41DB2B53007D3C /* AppTheme.swift in Sources */,
+				3551EC9205EF141916062B5B /* BankrollView.swift in Sources */,
 				3DF4C813201D2F74F7FF3121 /* ContentView.swift in Sources */,
 				F3920F4794CB3043D2DE7FD9 /* DataQuality.swift in Sources */,
 				A94AF063346CFA8214014479 /* Decision.swift in Sources */,
@@ -300,6 +307,7 @@
 				D6B2EF4C77C0B1A4854083E4 /* InjuriesView.swift in Sources */,
 				402715FDE6E69499868BFC07 /* IntelligenceDashboardView.swift in Sources */,
 				E32C9495AF04A8474CE8186D /* IntelligenceStore.swift in Sources */,
+				C922BDEDAAB4161E0EBCE9AA /* JournalView.swift in Sources */,
 				34C4DE6FFB232EB2DB4464E6 /* LocalDataQuality.swift in Sources */,
 				17559B3741811870ADD4A959 /* LocalDataService.swift in Sources */,
 				8BE63505FED0C9E74786D689 /* LocalDecisionEngine.swift in Sources */,

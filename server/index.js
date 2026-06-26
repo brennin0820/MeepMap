@@ -39,7 +39,7 @@ const PRIVATE_FILES = new Set([
 ]);
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '256kb' }));
 app.use((req, res, next) => {
   const p = req.path;
   if (PRIVATE_FILES.has(p) || PRIVATE_PREFIXES.some((prefix) => p === prefix || p.startsWith(`${prefix}/`))) {
@@ -53,6 +53,13 @@ function parseDays(value) {
   const n = parseInt(value, 10);
   if (Number.isNaN(n) || n < 1) return 7;
   return Math.min(n, 30);
+}
+
+// Coerce an untrusted what-if scenario body into a plain object so downstream
+// property access (setPlayerStatus, neutralCourt, …) is always safe.
+function normalizeScenario(scenario) {
+  if (!scenario || typeof scenario !== 'object' || Array.isArray(scenario)) return {};
+  return scenario;
 }
 
 async function resolveTeams(body = {}) {
@@ -277,7 +284,7 @@ app.post('/api/intelligence/what-if', async (req, res) => {
       homeTeamKey: homeTeam.key,
       awayTeamKey: awayTeam.key,
       date: req.body?.date,
-      scenario: req.body?.scenario || {},
+      scenario: normalizeScenario(req.body?.scenario),
       spread: req.body?.spread,
       total: req.body?.total,
     });
@@ -361,15 +368,27 @@ app.get('/api/intelligence/health', async (_req, res) => {
 });
 
 app.get('/api/history', (_req, res) => {
-  res.json({ predictions: getHistory() });
+  try {
+    res.json({ predictions: getHistory() });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.get('/api/accuracy', (_req, res) => {
-  res.json(getAccuracySummary());
+  try {
+    res.json(getAccuracySummary());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.get('/api/journal', (_req, res) => {
-  res.json(journal.getEntries());
+  try {
+    res.json(journal.getEntries());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post('/api/journal', (req, res) => {
@@ -402,7 +421,11 @@ app.delete('/api/journal/:id', (req, res) => {
 });
 
 app.get('/api/bankroll', (_req, res) => {
-  res.json(bankroll.getBankroll());
+  try {
+    res.json(bankroll.getBankroll());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.put('/api/bankroll', (req, res) => {
@@ -445,9 +468,9 @@ app.post('/api/simulate', async (req, res) => {
     const scheduleResult = await dataFetcher.getScheduleRange(14);
     const priorGames = scheduleResult.events.filter((e) => e.statusState === 'post');
     const spread =
-      req.body?.spread != null
+      req.body?.spread != null && Number.isFinite(Number(req.body.spread))
         ? Number(req.body.spread)
-        : req.body?.total != null
+        : req.body?.total != null && Number.isFinite(Number(req.body.total))
           ? { total: Number(req.body.total) }
           : null;
     const result = await predictor.simulateMatchup({
@@ -496,6 +519,12 @@ app.post('/api/refresh', async (req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
+  if (err && err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'Request body too large' });
+  }
+  if (err && (err.type === 'entity.parse.failed' || err instanceof SyntaxError)) {
+    return res.status(400).json({ error: 'Invalid JSON body' });
+  }
   console.error(err);
   res.status(500).json({ error: 'Internal server error' });
 });

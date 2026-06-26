@@ -10,16 +10,6 @@ struct SettingsView: View {
     @State private var accuracy: AccuracySummary?
     @State private var sourceHealth: SourceHealth?
     @State private var statusMessage: String?
-    @State private var bankroll: BankrollState?
-    @State private var bankrollStarting = ""
-    @State private var bankrollCurrent = ""
-    @State private var bankrollUnit = ""
-    @State private var journalEntries: [JournalEntry] = []
-    @State private var journalMatchup = ""
-    @State private var journalPick = ""
-    @State private var journalUnits = "1"
-    @State private var journalNotes = ""
-    @State private var trackingMessage: String?
 
     init(api: APIClient) {
         self.api = api
@@ -92,70 +82,6 @@ struct SettingsView: View {
                     Text("Local prediction history appears after the Command Center refreshes.")
                         .font(.caption)
                         .foregroundStyle(AppTheme.textSecondary)
-                }
-            }
-
-            Section("Bankroll") {
-                TextField("Starting bankroll", text: $bankrollStarting)
-                    .keyboardType(.decimalPad)
-                TextField("Current bankroll", text: $bankrollCurrent)
-                    .keyboardType(.decimalPad)
-                TextField("Unit size", text: $bankrollUnit)
-                    .keyboardType(.decimalPad)
-
-                if let bankroll {
-                    LabeledContent("ROI", value: String(format: "%.1f%%", bankroll.roi ?? 0))
-                    LabeledContent("Unit", value: String(format: "$%.0f", bankroll.unitSize))
-                }
-
-                Button("Save Bankroll") {
-                    Task { await saveBankroll() }
-                }
-            }
-
-            Section("Journal") {
-                TextField("Matchup", text: $journalMatchup)
-                    .textInputAutocapitalization(.words)
-                TextField("Pick", text: $journalPick)
-                    .textInputAutocapitalization(.words)
-                TextField("Units", text: $journalUnits)
-                    .keyboardType(.decimalPad)
-                TextField("Notes", text: $journalNotes, axis: .vertical)
-                    .lineLimit(2...4)
-
-                Button("Add Journal Entry") {
-                    Task { await addJournalEntry() }
-                }
-                .disabled(journalMatchup.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || journalPick.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
-                if let trackingMessage {
-                    Text(trackingMessage)
-                        .font(.caption)
-                        .foregroundStyle(AppTheme.textSecondary)
-                }
-
-                if journalEntries.isEmpty {
-                    Text("No local journal entries yet.")
-                        .font(.caption)
-                        .foregroundStyle(AppTheme.textSecondary)
-                } else {
-                    ForEach(journalEntries.prefix(5)) { entry in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("\(entry.matchup ?? "Matchup") · \(entry.pick ?? "Pick")")
-                                .font(.subheadline.weight(.semibold))
-                            HStack {
-                                Text(String(format: "%.1f units", entry.units ?? 0))
-                                Text(entry.result ?? "pending")
-                            }
-                            .font(.caption)
-                            .foregroundStyle(AppTheme.textSecondary)
-                            if let notes = entry.notes, !notes.isEmpty {
-                                Text(notes)
-                                    .font(.caption)
-                                    .foregroundStyle(AppTheme.textSecondary)
-                            }
-                        }
-                    }
                 }
             }
 
@@ -238,7 +164,6 @@ struct SettingsView: View {
             useOnDevice = true
             useRemoteServer = false
             await loadStatus()
-            await loadTracking()
         }
         .onChange(of: api.baseURL) { _, newValue in
             serverURLString = newValue
@@ -265,64 +190,6 @@ struct SettingsView: View {
         }
     }
 
-    private func loadTracking() async {
-        do {
-            bankroll = try await api.fetchBankroll()
-            syncBankrollFields()
-            journalEntries = try await api.fetchJournal().entries
-            trackingMessage = nil
-        } catch {
-            trackingMessage = error.localizedDescription
-        }
-    }
-
-    private func syncBankrollFields() {
-        guard let bankroll else { return }
-        bankrollStarting = numberField(bankroll.startingBankroll)
-        bankrollCurrent = numberField(bankroll.currentBankroll)
-        bankrollUnit = numberField(bankroll.unitSize)
-    }
-
-    private func saveBankroll() async {
-        let update = BankrollUpdate(
-            startingBankroll: Double(bankrollStarting),
-            currentBankroll: Double(bankrollCurrent),
-            unitSize: Double(bankrollUnit)
-        )
-        do {
-            bankroll = try await api.updateBankroll(update)
-            syncBankrollFields()
-            trackingMessage = "Bankroll saved locally."
-        } catch {
-            trackingMessage = error.localizedDescription
-        }
-    }
-
-    private func addJournalEntry() async {
-        let request = JournalEntryRequest(
-            matchup: journalMatchup.trimmingCharacters(in: .whitespacesAndNewlines),
-            pick: journalPick.trimmingCharacters(in: .whitespacesAndNewlines),
-            units: Double(journalUnits) ?? 1,
-            notes: journalNotes.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty,
-            betType: "moneyline"
-        )
-        do {
-            _ = try await api.addJournalEntry(request)
-            journalEntries = try await api.fetchJournal().entries
-            journalMatchup = ""
-            journalPick = ""
-            journalUnits = "1"
-            journalNotes = ""
-            trackingMessage = "Journal entry saved locally."
-        } catch {
-            trackingMessage = error.localizedDescription
-        }
-    }
-
-    private func numberField(_ value: Double) -> String {
-        value.rounded() == value ? String(format: "%.0f", value) : String(value)
-    }
-
     private func applyRemoteSettings() {
         guard APIClient.allowsRemoteServer else {
             api.useOnDeviceEngine = true
@@ -341,12 +208,6 @@ struct SettingsView: View {
     private func checkHealth() async {
         applyRemoteSettings()
         await loadStatus()
-    }
-}
-
-private extension String {
-    var nilIfEmpty: String? {
-        isEmpty ? nil : self
     }
 }
 

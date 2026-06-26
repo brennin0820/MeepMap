@@ -230,7 +230,14 @@ async function predictMatchup({
     priorGames
   );
 
-  const impact = await playerImpact.getMatchupImpact(homeKey, awayKey);
+  let impact;
+  try {
+    impact = await playerImpact.getMatchupImpact(homeKey, awayKey);
+  } catch (err) {
+    // Injury/roster fetch can fail (network/API). Degrade gracefully to a
+    // zero-impact assessment rather than rejecting the whole prediction.
+    impact = { home: { impactPoints: 0 }, away: { impactPoints: 0 } };
+  }
   const homeInjuryPenalty = Math.min(
     config.INJURY_CAP,
     impact.home.impactPoints * config.INJURY_SCALE + extraHomeInjuryPenalty
@@ -323,7 +330,7 @@ async function simulateMatchup({
   let homeWins = 0;
   let homeCovers = 0;
   let overHits = 0;
-  const totalLine = typeof spread === 'object' ? spread.total : null;
+  const totalLine = spread && typeof spread === 'object' ? spread.total : null;
   const spreadLine = typeof spread === 'number' ? spread : null;
 
   for (let i = 0; i < n; i++) {

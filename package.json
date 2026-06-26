@@ -18,11 +18,12 @@
     "electron:icons": "node scripts/generate-app-icons.js",
     "build:vercel": "npx vercel build",
     "deploy": "npx vercel deploy --prebuilt",
-    "test": "node scripts/test-engine.js",
+    "test": "node scripts/test-engine.js && node scripts/test-teams-view.js",
     "build:exe": "node scripts/build-exe.js",
     "make:exe": "node scripts/build-exe.js",
     "build:share": "node scripts/prepare-share.js",
     "test:engine": "node scripts/test-engine.js",
+    "test:teams": "node scripts/test-teams-view.js",
     "test:api": "node scripts/test-api.js"
   },
   "dependencies": {

@@ -75,6 +75,20 @@ struct ContentView: View {
             }
 
             NavigationStack {
+                JournalView(api: apiClient)
+            }
+            .tabItem {
+                Label("Journal", systemImage: "book.closed.fill")
+            }
+
+            NavigationStack {
+                BankrollView(api: apiClient)
+            }
+            .tabItem {
+                Label("Bankroll", systemImage: "dollarsign.circle.fill")
+            }
+
+            NavigationStack {
                 SettingsView(api: apiClient)
             }
             .tabItem {

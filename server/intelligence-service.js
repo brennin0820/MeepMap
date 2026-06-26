@@ -437,15 +437,21 @@ async function loadGameRows(days) {
   const injuryList = injuriesResult.injuries || [];
   const rows = [];
   for (const event of upcoming) {
-    const row = await buildGameRow(
-      event,
-      teamsResult.teams,
-      priorGames,
-      meta,
-      sourceHealth,
-      injuryList
-    );
-    if (row) rows.push(row);
+    try {
+      const row = await buildGameRow(
+        event,
+        teamsResult.teams,
+        priorGames,
+        meta,
+        sourceHealth,
+        injuryList
+      );
+      if (row) rows.push(row);
+    } catch (err) {
+      // One bad game (e.g. transient data fetch failure) must not sink the
+      // entire intelligence payload — skip it and keep the rest.
+      console.error(`Failed to analyze game ${event.id || event.name || '?'}: ${err.message}`);
+    }
   }
 
   const oddsAttachedCount = rows.filter((row) => row.apiGame?.dataQuality?.flags?.hasOdds === true).length;
