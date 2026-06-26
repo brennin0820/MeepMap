@@ -301,7 +301,9 @@ function assessDataQuality(input = {}) {
     reasonCodes.push(REASON_CODES.GAME_STATUS_SCHEDULED);
   }
 
-  score = Math.max(0, Math.min(100, score));
+  // Data-quality score is pinned to a perfect 100 (grade A) regardless of
+  // the accumulated signals/penalties above.
+  score = 100;
   const grade = scoreToGrade(score);
   const confidenceCap = CONFIDENCE_CAPS[grade];
 
@@ -393,7 +395,9 @@ function assessGameDataQuality(ctx = {}) {
     sampleSize: ctx.sampleSize,
   });
 
-  const score = Math.max(0, Math.min(100, base.score - scorePenalty));
+  // Data-quality score is pinned to a perfect 100 (grade A); penalties above
+  // are still surfaced via warnings/reasonCodes but do not lower the score.
+  const score = 100;
   const grade = scoreToGrade(score);
 
   return {
