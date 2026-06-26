@@ -2,6 +2,56 @@
 
 const { decide, normalizeDecideParams } = require('./decision-engine');
 const { modelProjectionFromPrediction } = require('./data-quality');
+const { statusImpact } = require('./player-impact');
+const config = require('./model-config');
+
+function rosterHasPlayer(roster, playerName) {
+  if (!roster || !playerName) return false;
+  const needle = playerName.toLowerCase();
+  const players = roster.players || roster.roster || [];
+  return players.some((p) => {
+    const name = (p.player || p.name || '').toLowerCase();
+    return name && (name.includes(needle) || needle.includes(name));
+  });
+}
+
+function injuryPenaltiesFromScenario(homeTeam, awayTeam, homeRoster, awayRoster, setPlayerStatus = []) {
+  let extraHome = 0;
+  let extraAway = 0;
+  for (const override of setPlayerStatus) {
+    const player = (override.player || '').trim();
+    if (!player) continue;
+    const impact = statusImpact(override.status) * config.INJURY_SCALE;
+    if (rosterHasPlayer(homeRoster, player)) {
+      extraHome += impact;
+    } else if (rosterHasPlayer(awayRoster, player)) {
+      extraAway += impact;
+    }
+  }
+  return { extraHome, extraAway };
+}
+
+function buildScenarioProjection(predictor, ctx, options = {}) {
+  if (!predictor?.projectMatchup || !ctx.homeTeam || !ctx.awayTeam) {
+    return ctx.modelProjection || modelProjectionFromPrediction(ctx.prediction);
+  }
+  const raw = predictor.projectMatchup({
+    homeTeam: ctx.homeTeam,
+    awayTeam: ctx.awayTeam,
+    fatigue: ctx.fatigue,
+    odds: ctx.odds,
+    neutralCourt: options.neutralCourt === true,
+    homeInjuryPenalty: options.extraHomeInjuryPenalty || 0,
+    awayInjuryPenalty: options.extraAwayInjuryPenalty || 0,
+  });
+  if (!raw?.enabled) return ctx.modelProjection;
+  return {
+    winProb: raw.projections?.homeWinProb,
+    projectedMargin: raw.projections?.projectedMargin,
+    projectedTotal: raw.projections?.projectedTotal,
+    spreadEdge: raw.projections?.spreadEdge,
+  };
+}
 
 function adjustTeamNet(team, delta) {
   if (!team) return team;
@@ -114,6 +164,7 @@ function buildWhatIfScenarios(input = {}) {
 function runWhatIf(ctx = {}) {
   const modelProjection =
     ctx.modelProjection || modelProjectionFromPrediction(ctx.prediction);
+  const scenario = ctx.scenario || {};
 
   const baseline = buildWhatIfScenarios({
     game: ctx.game,
@@ -130,20 +181,35 @@ function runWhatIf(ctx = {}) {
     injuries: ctx.injuries,
   });
 
-  const scenario = ctx.scenario || {};
-  if (scenario.setPlayerStatus?.length) {
+  if (scenario.setPlayerStatus?.length || scenario.neutralCourt) {
+    const { extraHome, extraAway } = injuryPenaltiesFromScenario(
+      ctx.homeTeam,
+      ctx.awayTeam,
+      ctx.homeRoster,
+      ctx.awayRoster,
+      scenario.setPlayerStatus || []
+    );
+    const adjustedProjection = buildScenarioProjection(ctx.predictor, ctx, {
+      neutralCourt: scenario.neutralCourt === true,
+      extraHomeInjuryPenalty: extraHome,
+      extraAwayInjuryPenalty: extraAway,
+    });
     const adjusted = buildWhatIfScenarios({
       game: ctx.game,
-      homeTeam: adjustTeamNet(ctx.homeTeam, -3),
+      homeTeam: ctx.homeTeam,
       awayTeam: ctx.awayTeam,
       odds: ctx.odds,
-      modelProjection,
+      modelProjection: adjustedProjection,
       prediction: ctx.prediction,
       dataQuality: ctx.dataQuality,
+      lineup: ctx.lineup,
       homeRoster: ctx.homeRoster,
       awayRoster: ctx.awayRoster,
+      fatigue: ctx.fatigue,
+      injuries: ctx.injuries,
     });
-    const summary = `Injury scenario shifts decision from ${baseline.baseline.decision} toward ${adjusted.baseline.decision}.`;
+    const label = scenario.neutralCourt ? 'Neutral court' : 'Injury adjustment';
+    const summary = `${label} shifts decision from ${baseline.baseline.decision} to ${adjusted.baseline.decision}.`;
     return {
       baseline: baseline.baseline,
       original: baseline.baseline,

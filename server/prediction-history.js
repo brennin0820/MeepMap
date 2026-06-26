@@ -1,19 +1,57 @@
-const fs = require('fs');
-const path = require('path');
+const storage = require('./storage');
 const { MODEL_VERSION } = require('./model-config');
 
-const HISTORY_PATH = path.join(__dirname, '..', 'data', 'prediction-history.json');
+const HISTORY_FILE = 'prediction-history.json';
+
+function normalizePickText(value) {
+  return String(value ?? '')
+    .toLowerCase()
+    .replace(/moneyline/g, '')
+    .replace(/\bml\b/g, '')
+    .replace(/@/g, ' ')
+    .replace(/\./g, '')
+    .trim();
+}
+
+/** Match moneyline pick text to a team key or display name (handles "Team ML" format). */
+function pickMatches(pick, { key, name } = {}) {
+  const pickText = normalizePickText(pick);
+  if (!pickText) return false;
+  const candidates = [key, name]
+    .map(normalizePickText)
+    .filter(Boolean);
+  return candidates.some(
+    (candidate) => pickText === candidate || pickText.includes(candidate) || candidate.includes(pickText)
+  );
+}
+
+function gameDatesMatch(a, b) {
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const da = new Date(a);
+  const db = new Date(b);
+  if (Number.isNaN(da.getTime()) || Number.isNaN(db.getTime())) return false;
+  return da.toISOString() === db.toISOString();
+}
+
+function projectedScores(pred) {
+  if (!pred?.projectedScore) return null;
+  const ps = pred.projectedScore;
+  const home = ps.homeScore ?? ps.home;
+  const away = ps.awayScore ?? ps.away;
+  if (typeof home !== 'number' || typeof away !== 'number') return null;
+  return { home, away };
+}
 
 function loadHistory() {
-  try {
-    return JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf8'));
-  } catch {
-    return { predictions: [], modelVersion: MODEL_VERSION };
-  }
+  return storage.readJson(HISTORY_FILE, () => ({
+    predictions: [],
+    modelVersion: MODEL_VERSION,
+  }));
 }
 
 function saveHistory(data) {
-  fs.writeFileSync(HISTORY_PATH, JSON.stringify(data, null, 2));
+  storage.writeJson(HISTORY_FILE, data);
 }
 
 function recordPrediction(entry) {
@@ -42,7 +80,10 @@ function recordPrediction(entry) {
     dataIssueNotes: null
   };
   const exists = history.predictions.find(
-    (p) => p.game?.id === entry.game?.id && p.game?.date === entry.game?.date && !p.result
+    (p) =>
+      p.game?.id === entry.game?.id &&
+      gameDatesMatch(p.game?.date, entry.game?.date) &&
+      !p.result
   );
   if (!exists) history.predictions.push(record);
   saveHistory(history);
@@ -52,18 +93,30 @@ function recordPrediction(entry) {
 function updateResult(gameId, gameDate, finalScore) {
   const history = loadHistory();
   const pred = history.predictions.find(
-    (p) => (p.game?.id === gameId || `${p.game?.away}@${p.game?.home}` === gameId) && p.game?.date === gameDate && !p.result
+    (p) =>
+      (p.game?.id === gameId || `${p.game?.away}@${p.game?.home}` === gameId) &&
+      gameDatesMatch(p.game?.date, gameDate) &&
+      !p.result
   );
   if (!pred) return null;
   pred.finalScore = finalScore;
   pred.result = 'completed';
   const home = finalScore.home;
   const away = finalScore.away;
-  const actualWinner = home > away ? pred.game.home : pred.game.away;
-  pred.wasCorrect = pred.moneylinePick === actualWinner;
-  if (pred.projectedScore) {
-    pred.marginError = Math.abs(home - away - (pred.projectedScore.home - pred.projectedScore.away));
-    pred.totalError = Math.abs(home + away - (pred.projectedScore.home + pred.projectedScore.away));
+  if (home === away) {
+    pred.wasCorrect = null;
+  } else {
+    const actualWinner = home > away ? pred.game.home : pred.game.away;
+    const actualWinnerKey = home > away ? pred.game.homeKey : pred.game.awayKey;
+    pred.wasCorrect = pickMatches(pred.moneylinePick, {
+      key: actualWinnerKey,
+      name: actualWinner,
+    });
+  }
+  const projected = projectedScores(pred);
+  if (projected) {
+    pred.marginError = Math.abs(home - away - (projected.home - projected.away));
+    pred.totalError = Math.abs(home + away - (projected.home + projected.away));
   }
   saveHistory(history);
   return pred;
@@ -139,5 +192,7 @@ module.exports = {
   recordPrediction,
   updateResult,
   getAccuracySummary,
-  getHistory: () => loadHistory().predictions
+  getHistory: () => loadHistory().predictions,
+  pickMatches,
+  normalizePickText,
 };

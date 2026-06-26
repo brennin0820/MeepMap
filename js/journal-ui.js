@@ -5,6 +5,12 @@
   const { escapeHtml } = global.AlertsUI;
 
   const RESULT_LABELS = { pending: 'Pending', won: 'Won', lost: 'Lost', push: 'Push' };
+  const RESULT_TIPS = {
+    pending: 'Bet not settled yet — waiting for the game result.',
+    won: 'This bet won — pick was correct.',
+    lost: 'This bet lost — pick was incorrect.',
+    push: 'Push — bet tied the line; stake is returned.',
+  };
 
   function fmtUnits(value) {
     const n = Number(value);
@@ -59,7 +65,7 @@
         </header>
         <p class="journal-entry__line">
           ${escapeHtml(e.pick || '')} · ${e.units ?? 1}u${odds ? ` · ${escapeHtml(odds)}` : ''}
-          <span class="journal-badge journal-badge--${result}">${RESULT_LABELS[result] || result}</span>
+          <span class="journal-badge journal-badge--${result}" title="${escapeHtml(RESULT_TIPS[result] || '')}">${RESULT_LABELS[result] || result}</span>
           ${settled && profit != null ? `<span class="journal-entry__profit ${profitClass}">${fmtUnits(profit)}</span>` : ''}
         </p>
         ${e.notes ? `<p class="journal-entry__notes">${escapeHtml(e.notes)}</p>` : ''}

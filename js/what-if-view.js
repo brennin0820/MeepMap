@@ -3,6 +3,13 @@
  */
 (function (global) {
   const { escapeHtml } = global.AlertsUI || { escapeHtml: (s) => String(s ?? '') };
+  const IV = global.IntelligenceView;
+
+  function renderDecisionBadge(decision) {
+    if (IV?.renderDecisionBadge) return IV.renderDecisionBadge(decision);
+    const slug = (decision || 'pass').toLowerCase().replace(/_/g, '-');
+    return `<span class="badge badge--decision badge--${slug}">${escapeHtml(decision || '—')}</span>`;
+  }
 
   function renderWhatIfForm(games, selectedGameId) {
     const options = (games || [])
@@ -67,14 +74,14 @@
         <div class="what-if-compare">
           <div class="what-if-col">
             <span class="what-if-col__label">Original</span>
-            <span class="badge badge--decision badge--${(orig.decision || 'pass').toLowerCase().replace(/_/g, '-')}">${escapeHtml(orig.decision || '—')}</span>
+            ${renderDecisionBadge(orig.decision)}
             <span>Edge: ${orig.edgeScore ?? '—'}</span>
             <span>Confidence: ${orig.confidence ?? '—'}%</span>
           </div>
           <div class="what-if-col what-if-col--arrow">→</div>
           <div class="what-if-col">
             <span class="what-if-col__label">Scenario</span>
-            <span class="badge badge--decision badge--${(scen.decision || 'pass').toLowerCase().replace(/_/g, '-')}">${escapeHtml(scen.decision || '—')}</span>
+            ${renderDecisionBadge(scen.decision)}
             <span>Edge: ${scen.edgeScore ?? '—'}</span>
             <span>Confidence: ${scen.confidence ?? '—'}%</span>
           </div>
@@ -94,7 +101,7 @@
           ${scenarios.map((s) => `
             <li>
               <strong>${escapeHtml(s.label || s.id)}</strong>
-              <span class="badge badge--decision badge--${(s.outcome?.decision || 'pass').toLowerCase().replace(/_/g, '-')}">${escapeHtml(s.outcome?.decision || '—')}</span>
+              ${renderDecisionBadge(s.outcome?.decision)}
               <span class="what-if-scenarios__edge">Edge ${s.outcome?.edgeScore ?? '—'}</span>
             </li>`).join('')}
         </ul>
@@ -113,6 +120,7 @@
         playerStatus: fd.get('playerStatus') || undefined,
         neutralCourt: fd.get('neutralCourt') === 'true',
         spread: fd.get('spread') ? Number(fd.get('spread')) : undefined,
+        total: fd.get('total') ? Number(fd.get('total')) : undefined,
       };
       if (resultsEl) {
         resultsEl.innerHTML = '<p class="loading-inline">Running scenario…</p>';

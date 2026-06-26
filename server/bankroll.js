@@ -1,10 +1,9 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
 const journal = require('./journal');
+const storage = require('./storage');
 
-const BANKROLL_PATH = path.join(__dirname, '..', 'data', 'bankroll.json');
+const BANKROLL_FILE = 'bankroll.json';
 
 const DEFAULTS = {
   startingBankroll: 1000,
@@ -17,16 +16,12 @@ const DEFAULTS = {
 };
 
 function loadBankroll() {
-  try {
-    return { ...DEFAULTS, ...JSON.parse(fs.readFileSync(BANKROLL_PATH, 'utf8')) };
-  } catch {
-    return { ...DEFAULTS };
-  }
+  return { ...DEFAULTS, ...storage.readJson(BANKROLL_FILE, {}) };
 }
 
 function saveBankroll(data) {
   data.updatedAt = new Date().toISOString();
-  fs.writeFileSync(BANKROLL_PATH, JSON.stringify(data, null, 2));
+  storage.writeJson(BANKROLL_FILE, data);
   return data;
 }
 

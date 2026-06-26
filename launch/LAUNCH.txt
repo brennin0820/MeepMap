@@ -1,0 +1,18 @@
+MeepMap — how to run (Windows)
+================================
+
+1. Extract this entire folder anywhere you like (Desktop, Documents, etc.).
+2. Double-click "Start MeepMap".
+
+That's it. You do not need Node, npm, or a terminal.
+
+Optional: double-click "Pin MeepMap to Desktop" to add a shortcut.
+
+Tips
+----
+- MeepMap runs in the background. Look for the MeepMap icon in the system tray
+  (near the clock). Right-click it to open the window or quit.
+- If "Start MeepMap" says the app is missing, re-extract the full zip or ask
+  for a fresh copy — do not move only the shortcut file by itself.
+
+Predictions are statistical estimates only — not financial advice.

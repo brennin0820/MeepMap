@@ -202,6 +202,9 @@ async function predictMatchup({
   teams,
   priorGames = [],
   eventId = null,
+  neutralCourt = false,
+  extraHomeInjuryPenalty = 0,
+  extraAwayInjuryPenalty = 0,
 }) {
   const homeKey = homeTeamKey?.toLowerCase();
   const awayKey = awayTeamKey?.toLowerCase();
@@ -230,11 +233,11 @@ async function predictMatchup({
   const impact = await playerImpact.getMatchupImpact(homeKey, awayKey);
   const homeInjuryPenalty = Math.min(
     config.INJURY_CAP,
-    impact.home.impactPoints * config.INJURY_SCALE
+    impact.home.impactPoints * config.INJURY_SCALE + extraHomeInjuryPenalty
   );
   const awayInjuryPenalty = Math.min(
     config.INJURY_CAP,
-    impact.away.impactPoints * config.INJURY_SCALE
+    impact.away.impactPoints * config.INJURY_SCALE + extraAwayInjuryPenalty
   );
 
   const scores = computeScores(home, away, {
@@ -242,6 +245,7 @@ async function predictMatchup({
     awayFatigue,
     homeInjuryPenalty,
     awayInjuryPenalty,
+    neutralCourt,
   });
 
   const { homeScore, awayScore } = scores;
@@ -395,7 +399,7 @@ function toIntelligencePrediction(raw, homeTeam, awayTeam, oddsInput) {
   const margin = raw.margin ?? 0;
   const marketSpread = oddsInput?.spread;
   const spreadEdge =
-    typeof marketSpread === 'number' ? computeHomeSpreadEdge(margin, marketSpread) : margin;
+    typeof marketSpread === 'number' ? computeHomeSpreadEdge(margin, marketSpread) : null;
 
   const favName = homeWinProb >= 0.5 ? homeTeam?.name : awayTeam?.name;
 
@@ -445,6 +449,8 @@ function projectMatchup({
   fatigue: fatigueInput,
   odds: oddsInput,
   neutralCourt,
+  homeInjuryPenalty = 0,
+  awayInjuryPenalty = 0,
 }) {
   if (!homeTeam || !awayTeam) {
     return toIntelligencePrediction(
@@ -464,6 +470,8 @@ function projectMatchup({
   const { homeScore, awayScore } = computeScores(homeTeam, awayTeam, {
     homeFatigue,
     awayFatigue,
+    homeInjuryPenalty,
+    awayInjuryPenalty,
     neutralCourt,
   });
 
@@ -541,6 +549,7 @@ async function predictUpcomingGames({
       });
       prediction = toIntelligencePrediction(raw, homeTeam, awayTeam, oddsForGame);
     } catch {
+      const impact = require('./player-impact').computeMatchupImpactFromRosters(homeRoster, awayRoster);
       prediction = projectMatchup({
         homeTeam,
         awayTeam,
@@ -549,6 +558,14 @@ async function predictUpcomingGames({
         awayRoster,
         fatigue: fatigueResult,
         odds: oddsForGame,
+        homeInjuryPenalty: Math.min(
+          config.INJURY_CAP,
+          impact.home.impactPoints * config.INJURY_SCALE
+        ),
+        awayInjuryPenalty: Math.min(
+          config.INJURY_CAP,
+          impact.away.impactPoints * config.INJURY_SCALE
+        ),
       });
     }
 

@@ -13,17 +13,17 @@
 
   function renderFilters(active = 'all') {
     const filters = [
-      { id: 'all', label: 'All' },
-      { id: 'STRONG_PICK', label: 'Best Bets' },
-      { id: 'LEAN', label: 'Lean' },
-      { id: 'PASS', label: 'Pass' },
-      { id: 'WAIT_FOR_LINEUP', label: 'Wait' },
-      { id: 'HIGH_RISK_ONLY', label: 'High Risk' },
+      { id: 'all', label: 'All', tip: 'Show every game regardless of recommendation.' },
+      { id: 'STRONG_PICK', label: 'Best Bets', tip: IV?.decisionTooltip?.('STRONG_PICK') },
+      { id: 'LEAN', label: 'Lean', tip: IV?.decisionTooltip?.('LEAN') },
+      { id: 'PASS', label: 'Pass', tip: IV?.decisionTooltip?.('PASS') },
+      { id: 'WAIT_FOR_LINEUP', label: 'Wait', tip: IV?.decisionTooltip?.('WAIT_FOR_LINEUP') },
+      { id: 'HIGH_RISK_ONLY', label: 'High Risk', tip: IV?.decisionTooltip?.('HIGH_RISK_ONLY') },
     ];
     return `
       <div class="filter-bar" role="group" aria-label="Filter games">
         ${filters.map((f) => `
-          <button class="filter-btn ${f.id === active ? 'filter-btn--active' : ''}" type="button" data-filter="${f.id}">${f.label}</button>
+          <button class="filter-btn ${f.id === active ? 'filter-btn--active' : ''}" type="button" data-filter="${f.id}"${f.tip ? ` title="${escapeHtml(f.tip)}"` : ''}>${f.label}</button>
         `).join('')}
       </div>`;
   }
