@@ -1,12 +1,30 @@
+# Render Blueprint — deploy the WNBA Bet Predictor as a hosted web service.
+# In the Render dashboard: New + > Blueprint, and point it at this repo.
+# Render reads this file, provisions the service + persistent disk, and deploys.
+#
+# NOTE: Persistent disks require a paid plan — Render's free web services use an
+# ephemeral filesystem and cannot attach a disk. This blueprint uses `starter`
+# so journal / bankroll / prediction history survive restarts and redeploys.
+# To run on the free tier instead, set `plan: free` and delete the `disk:` block
+# below (state will then reset whenever the service restarts).
 services:
   - type: web
     name: meepmap-wnba-predictor
     runtime: node
-    repo: https://github.com/brennin0820/MeepMap
-    branch: main
-    buildCommand: npm install
+    plan: starter
+    buildCommand: npm ci
     startCommand: node server/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
+      - key: NODE_VERSION
+        value: "20"
       - key: NODE_ENV
         value: production
-    autoDeploy: true
+      # Writable, persistent location for journal / bankroll / prediction history.
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1

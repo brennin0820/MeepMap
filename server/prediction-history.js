@@ -1,19 +1,17 @@
-const fs = require('fs');
-const path = require('path');
+const storage = require('./storage');
 const { MODEL_VERSION } = require('./model-config');
 
-const HISTORY_PATH = path.join(__dirname, '..', 'data', 'prediction-history.json');
+const HISTORY_FILE = 'prediction-history.json';
 
 function loadHistory() {
-  try {
-    return JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf8'));
-  } catch {
-    return { predictions: [], modelVersion: MODEL_VERSION };
-  }
+  return storage.readJson(HISTORY_FILE, () => ({
+    predictions: [],
+    modelVersion: MODEL_VERSION,
+  }));
 }
 
 function saveHistory(data) {
-  fs.writeFileSync(HISTORY_PATH, JSON.stringify(data, null, 2));
+  storage.writeJson(HISTORY_FILE, data);
 }
 
 function recordPrediction(entry) {
