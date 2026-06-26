@@ -35,6 +35,7 @@ if (DATA_DIR !== BUNDLED_DATA_DIR) {
   }
 }
 
+/** Absolute path to a state file within the active DATA_DIR. */
 function filePath(name) {
   return path.join(DATA_DIR, name);
 }
@@ -61,6 +62,7 @@ function seedIfMissing(name) {
  * Read JSON state, falling back to `fallback` (value or factory) when the file
  * is missing or unreadable.
  */
+/** Read and parse a shipped seed file from the bundled ./data directory. */
 function readBundled(name) {
   return JSON.parse(fs.readFileSync(path.join(BUNDLED_DATA_DIR, name), 'utf8'));
 }
