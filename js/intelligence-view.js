@@ -13,6 +13,80 @@
     HIGH_RISK_ONLY: 'High Risk',
   };
 
+  const DECISION_TIPS = {
+    STRONG_PICK: 'Top recommendation — strong model edge with reliable data. Use normal bet sizing and confirm the line has not moved.',
+    LEAN: 'Secondary pick with a modest edge. Use smaller stakes and watch for lineup or injury news.',
+    PASS: 'No bet recommended — the edge is too small or uncertainty is too high.',
+    WAIT_FOR_LINEUP: 'Hold until starting lineups are official (usually about 30 minutes before tip-off).',
+    INSUFFICIENT_DATA: 'Not enough verified stats or lines for a trustworthy call. Skip this game.',
+    HIGH_RISK_ONLY: 'Only consider with very small stakes — volatile matchup or thin data.',
+  };
+
+  const GRADE_TIPS = {
+    A: 'Excellent data — stats, odds, and lineups are complete and fresh.',
+    B: 'Good data — minor gaps but trustworthy enough for most picks.',
+    C: 'Fair data — some inputs missing or stale; confidence is capped.',
+    D: 'Weak data — treat picks cautiously.',
+    F: 'Poor data — model confidence is heavily limited.',
+  };
+
+  const RISK_TIPS = {
+    low: 'Lower-variance pick — the model sees a clearer edge relative to risk.',
+    medium: 'Moderate variance — use standard caution and stake sizing.',
+    high: 'Higher variance — limit stake size; outcomes can swing.',
+    extreme: 'Very uncertain — avoid betting until more data is available.',
+  };
+
+  const VOLATILITY_TIPS = {
+    Hot: 'Winning steadily with positive margins in recent games — consistent form.',
+    Cold: 'Losing steadily with negative margins in recent games — struggling lately.',
+    Collapsing: 'Results are erratic — big wins and losses mixed; harder to predict.',
+  };
+
+  const SUMMARY_TILE_TIPS = {
+    'Best Bets': 'Games rated Best Bet — strongest model recommendations today.',
+    Lean: 'Games rated Lean — playable but with a smaller edge.',
+    Pass: 'Games where the model recommends no bet.',
+    Wait: 'Games on hold until starting lineups are confirmed.',
+  };
+
+  function decisionKey(decision) {
+    if (typeof decision === 'object' && decision != null) return decision.decision || 'PASS';
+    return decision || 'PASS';
+  }
+
+  function decisionTooltip(decision) {
+    return DECISION_TIPS[decisionKey(decision)] || 'Model recommendation for this game.';
+  }
+
+  function gradeTooltip(grade, score) {
+    const g = (grade || 'F').toUpperCase();
+    const base = GRADE_TIPS[g] || 'How complete and fresh the underlying stats and lines are.';
+    if (score != null && score !== '') return `${base} Score: ${score}/100.`;
+    return base;
+  }
+
+  function riskTooltip(risk) {
+    const r = String(risk || 'Medium').toLowerCase();
+    if (r.includes('extreme')) return RISK_TIPS.extreme;
+    if (r.includes('low')) return RISK_TIPS.low;
+    if (r.includes('high')) return RISK_TIPS.high;
+    return RISK_TIPS.medium;
+  }
+
+  function volatilityTooltip(label) {
+    return VOLATILITY_TIPS[label] || 'Recent scoring-margin trend for this team.';
+  }
+
+  function edgeTooltip(score) {
+    return `How much advantage the model sees vs the betting line (0–100). Higher means a stronger edge. Current: ${score}.`;
+  }
+
+  function fatigueTooltip(detail) {
+    const base = 'Schedule or travel fatigue may affect performance.';
+    return detail ? `${base} ${detail}` : base;
+  }
+
   function decisionType(game) {
     if (!game) return 'PASS';
     const d = game.decision;
@@ -74,7 +148,7 @@
     const val = Math.max(0, Math.min(100, Number(score) || 0));
     const tier = val >= 70 ? 'high' : val >= 45 ? 'mid' : 'low';
     return `
-      <div class="edge-meter edge-meter--${tier}" title="Edge score ${val}">
+      <div class="edge-meter edge-meter--${tier}" title="${escapeHtml(edgeTooltip(val))}">
         <div class="edge-meter__track">
           <div class="edge-meter__fill" style="width:${val}%"></div>
         </div>
@@ -83,18 +157,19 @@
   }
 
   function renderDecisionBadge(decision) {
-    const slug = (decision || 'PASS').toLowerCase().replace(/_/g, '-');
-    return `<span class="badge badge--decision badge--${slug}">${escapeHtml(decisionLabel(decision))}</span>`;
+    const key = decisionKey(decision);
+    const slug = key.toLowerCase().replace(/_/g, '-');
+    return `<span class="badge badge--decision badge--${slug}" title="${escapeHtml(decisionTooltip(decision))}">${escapeHtml(decisionLabel(decision))}</span>`;
   }
 
   function renderQualityBadge(dq) {
     const grade = typeof dq === 'object' ? dq.grade : dq;
     const score = typeof dq === 'object' ? dq.score : null;
-    return `<span class="badge badge--grade ${gradeClass(grade)}" title="Data quality ${score ?? ''}">Grade ${escapeHtml(grade || '—')}</span>`;
+    return `<span class="badge badge--grade ${gradeClass(grade)}" title="${escapeHtml(gradeTooltip(grade, score))}">Grade ${escapeHtml(grade || '—')}</span>`;
   }
 
   function renderRiskBadge(risk) {
-    return `<span class="badge badge--risk ${riskClass(risk)}">${escapeHtml(risk || 'Medium')} risk</span>`;
+    return `<span class="badge badge--risk ${riskClass(risk)}" title="${escapeHtml(riskTooltip(risk))}">${escapeHtml(risk || 'Medium')} risk</span>`;
   }
 
   function renderGameCard(game, { compact = false } = {}) {
@@ -108,7 +183,7 @@
     const fatigueInsight = (game.insights || []).find((i) => i.type === 'FATIGUE');
 
     return `
-      <article class="game-card ${compact ? 'game-card--compact' : ''}" data-game-id="${escapeHtml(id)}">
+      <article class="game-card ${compact ? 'game-card--compact' : ''}" data-game-id="${escapeHtml(id)}" data-decision="${escapeHtml(dtype)}">
         <header class="game-card__header">
           <div class="game-card__matchup">
             <span class="game-card__away">${escapeHtml(game.away)}</span>
@@ -124,9 +199,9 @@
         </div>
         ${(homeVol || awayVol || fatigueInsight) ? `
         <div class="game-card__signals">
-          ${homeVol ? `<span class="signal-chip signal-chip--vol" title="Home volatility">${escapeHtml(game.home)}: ${escapeHtml(homeVol)}</span>` : ''}
-          ${awayVol ? `<span class="signal-chip signal-chip--vol" title="Away volatility">${escapeHtml(game.away)}: ${escapeHtml(awayVol)}</span>` : ''}
-          ${fatigueInsight ? `<span class="signal-chip signal-chip--fatigue" title="${escapeHtml(fatigueInsight.detail || '')}">Fatigue</span>` : ''}
+          ${homeVol ? `<span class="signal-chip signal-chip--vol" title="${escapeHtml(volatilityTooltip(homeVol))}">${escapeHtml(game.home)}: ${escapeHtml(homeVol)}</span>` : ''}
+          ${awayVol ? `<span class="signal-chip signal-chip--vol" title="${escapeHtml(volatilityTooltip(awayVol))}">${escapeHtml(game.away)}: ${escapeHtml(awayVol)}</span>` : ''}
+          ${fatigueInsight ? `<span class="signal-chip signal-chip--fatigue" title="${escapeHtml(fatigueTooltip(fatigueInsight.detail))}">Fatigue</span>` : ''}
         </div>` : ''}
         <div class="game-card__metrics">
           <div class="metric">
@@ -161,7 +236,7 @@
     return `
       <div class="summary-tiles">
         ${tiles.map((t) => `
-          <div class="summary-tile ${t.cls}">
+          <div class="summary-tile ${t.cls}" title="${escapeHtml(SUMMARY_TILE_TIPS[t.label] || '')}">
             <span class="summary-tile__count">${t.count}</span>
             <span class="summary-tile__label">${t.label}</span>
           </div>`).join('')}
@@ -208,7 +283,7 @@
     return `
       <section class="hero-strip">
         <div class="hero-strip__main">
-          <p class="hero-strip__eyebrow">Trading desk</p>
+          <p class="hero-strip__eyebrow">Daily read</p>
           <div class="hero-strip__headline-row">
             <h3 class="hero-strip__title">${totalGames} games on board</h3>
             <span class="hero-strip__status hero-strip__status--${freshness.toLowerCase()}">${escapeHtml(freshness)} feed</span>
@@ -353,7 +428,7 @@
       <div class="command-center">
         <header class="panel-header">
           <h2 class="panel-title">Command Center</h2>
-          <p class="panel-desc">Decision-driven overview — accuracy before picks.</p>
+          <p class="panel-desc">Decision-driven overview — accuracy before picks.${data.modelVersion ? ` Engine ${escapeHtml(data.modelVersion)}.` : ''}</p>
         </header>
 
         ${renderOverviewHero({ games, summary, alerts, health, meta })}
@@ -410,6 +485,10 @@
     edgeMeter,
     decisionLabel,
     decisionType,
+    decisionTooltip,
+    gradeTooltip,
+    riskTooltip,
+    volatilityTooltip,
     bindActions,
     filterByDecision,
   };

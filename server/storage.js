@@ -14,11 +14,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const { BUNDLED_DATA_DIR, getDataDir } = require('./paths');
 
-const BUNDLED_DATA_DIR = path.join(__dirname, '..', 'data');
-const DATA_DIR = process.env.DATA_DIR
-  ? path.resolve(process.env.DATA_DIR)
-  : BUNDLED_DATA_DIR;
+const DATA_DIR = getDataDir();
 
 let writable = true;
 

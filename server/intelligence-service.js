@@ -141,7 +141,9 @@ function recommendedPick(decision, prediction, homeTeam, awayTeam) {
     return null;
   }
   if (!prediction?.enabled) return null;
-  const fav = (prediction.winProb?.home ?? 0.5) >= 0.5 ? homeTeam?.name : awayTeam?.name;
+  const homeProb = prediction.winProb?.home ?? 0.5;
+  const awayProb = prediction.winProb?.away ?? 0.5;
+  const fav = homeProb >= awayProb ? homeTeam?.name : awayTeam?.name;
   return fav ? `${fav} ML` : null;
 }
 
@@ -160,15 +162,17 @@ function buildModelProjection(prediction) {
 }
 
 function mapAlertsForApi(alerts) {
-  const severityMap = { Critical: 'critical', High: 'critical', Medium: 'warning', Low: 'info', Info: 'info' };
   return (alerts || []).map((a, i) => ({
     id: a.id || `alert-${i}-${a.type || 'info'}`,
     type: a.type,
-    severity: severityMap[a.severity] || 'info',
-    title: a.title || a.type,
+    severity: a.severity || 'Info',
+    title: a.title || (a.type || 'ALERT').replace(/_/g, ' '),
     message: a.message,
-    gameId: a.game || null,
+    gameId: a.gameId || a.game || null,
+    home: a.home || null,
+    away: a.away || null,
     code: a.type,
+    action: a.action || null,
   }));
 }
 
@@ -328,7 +332,7 @@ async function buildGameRow(event, teams, priorGames, meta, sourceHealth, injury
     warnings: explanation.cons,
     humanReasons,
     insights,
-    explanation: { summary: explanation.summary, bullets: explanation.bullets },
+    explanation,
     homeTeam: {
       key: homeKey,
       name: homeTeam.name,
@@ -577,6 +581,15 @@ async function runWhatIfScenario(body) {
     teams: teamsResult.teams,
   });
 
+  const fatigueResult = require('./fatigue').assessMatchupFatigue(
+    hKey,
+    aKey,
+    body.date || prediction.gameDate || new Date().toISOString().slice(0, 10),
+    []
+  );
+  const homeRoster = dataFetcher.getRosterFromInjuries(hKey, injuriesResult.injuries || [], homeTeam.name);
+  const awayRoster = dataFetcher.getRosterFromInjuries(aKey, injuriesResult.injuries || [], awayTeam.name);
+
   const modelProjection = buildModelProjection(prediction);
   const manualOdds = {};
   if (body.spread != null && Number.isFinite(Number(body.spread))) {
@@ -619,6 +632,11 @@ async function runWhatIfScenario(body) {
     dataQuality,
     prediction,
     scenario,
+    fatigue: fatigueResult,
+    homeRoster,
+    awayRoster,
+    injuries: matchupInjuries,
+    predictor,
   });
 
   return {

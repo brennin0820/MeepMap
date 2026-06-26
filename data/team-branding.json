@@ -1,0 +1,97 @@
+{
+  "_comment": "Team branding metadata — sigils, colors, and liveries. PREP SCAFFOLD ONLY: all values are intentionally empty/null so nothing renders until populated and wired on. Keyed by the same team `key` used in teams-fallback.json. See data/team-branding.README.md for the field contract.",
+  "_schemaVersion": 1,
+  "source": "local-branding",
+  "lastUpdated": null,
+  "branding": {
+    "atl": {
+      "_note": "SAMPLE / reference entry — shows every field populated. Other teams remain null until you fill them. Colors are the Atlanta Dream palette; the sigil/livery here are placeholder artwork, not official logos.",
+      "name": "Atlanta Dream",
+      "colors": { "primary": "#E03A3E", "secondary": "#000000", "accent": "#C1D32F", "text": "#FFFFFF" },
+      "sigil": {
+        "local": "assets/teams/atl/sigil.svg",
+        "cdn": "https://a.espncdn.com/i/teamlogos/wnba/500/atl.png",
+        "inlineSvg": "<svg viewBox=\"0 0 64 64\" xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" aria-label=\"Atlanta Dream\"><rect width=\"64\" height=\"64\" rx=\"12\" fill=\"#E03A3E\"/><path d=\"M16 46 32 16l16 30h-7l-9-17-9 17z\" fill=\"#fff\"/><rect x=\"26\" y=\"40\" width=\"12\" height=\"4\" rx=\"2\" fill=\"#C1D32F\"/></svg>",
+        "alt": "Atlanta Dream sigil"
+      },
+      "livery": {
+        "local": "assets/teams/atl/livery.svg",
+        "cdn": null,
+        "inlineSvg": null,
+        "pattern": "diagonal-stripes"
+      }
+    },
+    "chi": {
+      "name": "Chicago Sky",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "con": {
+      "name": "Connecticut Sun",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "dal": {
+      "name": "Dallas Wings",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "ind": {
+      "name": "Indiana Fever",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "las": {
+      "name": "Las Vegas Aces",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "min": {
+      "name": "Minnesota Lynx",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "ny": {
+      "name": "New York Liberty",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "phx": {
+      "name": "Phoenix Mercury",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "sea": {
+      "name": "Seattle Storm",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "was": {
+      "name": "Washington Mystics",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "gs": {
+      "name": "Golden State Valkyries",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    },
+    "tor": {
+      "name": "Toronto Tempo",
+      "colors": { "primary": null, "secondary": null, "accent": null, "text": null },
+      "sigil": { "local": null, "cdn": null, "inlineSvg": null, "alt": null },
+      "livery": { "local": null, "cdn": null, "inlineSvg": null, "pattern": null }
+    }
+  }
+}

@@ -1,5 +1,8 @@
 node_modules/
 dist/
+dist-electron/
+out/
+release/
 ios/build/
 ios/dist/
 .DS_Store
@@ -7,3 +10,9 @@ ios/dist/
 .playwright-cli/
 *.xcuserstate
 DerivedData/
+.vercel
+
+# Electron / electron-builder artifacts
+*.blockmap
+builder-debug.yml
+builder-effective-config.yaml

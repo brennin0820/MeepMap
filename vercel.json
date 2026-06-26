@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": null,
+  "routes": [
+    { "src": "/server/(.*)", "dest": "/api" },
+    { "src": "/scripts/(.*)", "dest": "/api" },
+    { "src": "/data/(.*)", "dest": "/api" },
+    { "src": "/package.json", "dest": "/api" },
+    { "src": "/package-lock.json", "dest": "/api" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api" }
+  ],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60,
+      "includeFiles": "{data/**,assets/**,index.html,app.js,styles.css,js/**}"
+    }
+  }
+}
+

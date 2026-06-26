@@ -32,8 +32,17 @@
       .replace(/"/g, '&quot;');
   }
 
+  function normalizeSeverity(severity) {
+    const raw = String(severity || 'Info');
+    const key = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+    if (key === 'Warning') return 'Medium';
+    if (key === 'Critical') return 'Critical';
+    if (SEVERITY_CLASS[key]) return key;
+    return 'Info';
+  }
+
   function alertClass(severity) {
-    return SEVERITY_CLASS[severity] || 'alert--info';
+    return SEVERITY_CLASS[normalizeSeverity(severity)] || 'alert--info';
   }
 
   function alertIcon(type) {
@@ -41,7 +50,7 @@
   }
 
   function renderAlertItem(alert) {
-    const sev = alert.severity || 'Info';
+    const sev = normalizeSeverity(alert.severity);
     const type = alert.type || 'INFO';
     const game = alert.gameId || alert.game
       ? `<span class="alert__game">${escapeHtml(alert.away && alert.home ? `${alert.away} @ ${alert.home}` : alert.gameId || '')}</span>`
@@ -58,7 +67,7 @@
   }
 
   function renderAlertBanner(alert) {
-    const sev = alert.severity || 'Medium';
+    const sev = normalizeSeverity(alert.severity || 'Medium');
     return `
       <div class="banner ${alertClass(sev)}" role="alert">
         <span class="banner__icon" aria-hidden="true">${alertIcon(alert.type)}</span>
@@ -84,7 +93,7 @@
   function mountGlobalAlerts(container, alerts) {
     if (!container) return;
     const critical = (alerts || []).filter((a) =>
-      ['Critical', 'High'].includes(a.severity)
+      ['Critical', 'High'].includes(normalizeSeverity(a.severity))
     );
     container.innerHTML = critical.slice(0, 3).map(renderAlertBanner).join('');
     container.querySelectorAll('.banner__dismiss').forEach((btn) => {

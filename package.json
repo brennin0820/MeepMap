@@ -9,18 +9,114 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node server/index.js",
+    "electron:dev": "electron electron/main.js",
+    "electron:build": "electron-builder && node scripts/copy-launchers.js",
+    "electron:build:win": "electron-builder --win && node scripts/copy-launchers.js",
+    "electron:build:zip": "electron-builder --win zip && node scripts/copy-launchers.js",
+    "electron:launchers": "node scripts/copy-launchers.js",
+    "postinstall": "node scripts/install-electron-binary.js",
+    "electron:icons": "node scripts/generate-app-icons.js",
+    "build:vercel": "npx vercel build",
+    "deploy": "npx vercel deploy --prebuilt",
     "test": "node scripts/test-engine.js",
     "build:exe": "node scripts/build-exe.js",
+    "make:exe": "node scripts/build-exe.js",
     "build:share": "node scripts/prepare-share.js",
     "test:engine": "node scripts/test-engine.js",
     "test:api": "node scripts/test-api.js"
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
   },
   "devDependencies": {
+    "electron": "^35.7.5",
+    "electron-builder": "^25.1.8",
     "pkg": "^5.8.1"
+  },
+  "build": {
+    "appId": "com.meepmap.wnba-bet-predictor",
+    "productName": "MeepMap",
+    "icon": "build/icon.png",
+    "directories": {
+      "output": "dist-electron",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.js"
+    },
+    "extraFiles": [
+      {
+        "from": "launch",
+        "to": ".",
+        "filter": ["**/*"]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "server",
+        "to": "app/server"
+      },
+      {
+        "from": "js",
+        "to": "app/js"
+      },
+      {
+        "from": "data",
+        "to": "app/data"
+      },
+      {
+        "from": "assets",
+        "to": "app/assets"
+      },
+      {
+        "from": "index.html",
+        "to": "app/index.html"
+      },
+      {
+        "from": "app.js",
+        "to": "app/app.js"
+      },
+      {
+        "from": "styles.css",
+        "to": "app/styles.css"
+      },
+      {
+        "from": "node_modules",
+        "to": "app/node_modules"
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "target": [
+        "nsis",
+        "portable",
+        "zip"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.sports"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Game"
+    }
   },
   "pkg": {
     "scripts": [
@@ -29,11 +125,15 @@
     "assets": [
       "index.html",
       "app.js",
+      "styles.css",
       "js/**/*",
       "data/**/*",
+      "assets/**/*",
       "server/**/*",
       "SHARE.txt"
     ],
-    "targets": ["node18-win-x64"]
+    "targets": [
+      "node18-win-x64"
+    ]
   }
 }

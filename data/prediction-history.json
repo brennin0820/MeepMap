@@ -1379,7 +1379,487 @@
       "marginError": null,
       "totalError": null,
       "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T03:49:02.303Z-1782445742759",
+      "timestamp": "2026-06-26T03:49:02.759Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T03:49:02.303Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T03:49:15.701Z-1782445755701",
+      "timestamp": "2026-06-26T03:49:15.701Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T03:49:15.701Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T03:49:24.772Z-1782445764772",
+      "timestamp": "2026-06-26T03:49:24.772Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T03:49:24.772Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T03:49:41.692Z-1782445782061",
+      "timestamp": "2026-06-26T03:49:42.061Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T03:49:41.692Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T03:50:18.495Z-1782445818585",
+      "timestamp": "2026-06-26T03:50:18.585Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T03:50:18.495Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T04:15:17.276Z-1782447317949",
+      "timestamp": "2026-06-26T04:15:17.949Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T04:15:17.276Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T04:16:16.616Z-1782447376616",
+      "timestamp": "2026-06-26T04:16:16.616Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T04:16:16.616Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "fallback-1-2026-06-22T00:00:00.000Z-1782447415018",
+      "timestamp": "2026-06-26T04:16:55.018Z",
+      "game": {
+        "id": "fallback-1",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-22T00:00:00.000Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "fallback-2-2026-06-23T00:00:00.000Z-1782447415020",
+      "timestamp": "2026-06-26T04:16:55.020Z",
+      "game": {
+        "id": "fallback-2",
+        "home": "Atlanta Dream",
+        "away": "Indiana Fever",
+        "homeKey": "atl",
+        "awayKey": "ind",
+        "date": "2026-06-23T00:00:00.000Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 103.7,
+        "awayScore": 99.9
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 31,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 12,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T04:16:55.041Z-1782447415041",
+      "timestamp": "2026-06-26T04:16:55.041Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T04:16:55.041Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T04:27:06.884Z-1782448027638",
+      "timestamp": "2026-06-26T04:27:07.638Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T04:27:06.884Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
+    },
+    {
+      "id": "matchup-min-las-2026-06-26T04:28:35.125Z-1782448115125",
+      "timestamp": "2026-06-26T04:28:35.125Z",
+      "game": {
+        "id": "matchup-min-las",
+        "home": "Las Vegas Aces",
+        "away": "Minnesota Lynx",
+        "homeKey": "las",
+        "awayKey": "min",
+        "date": "2026-06-26T04:28:35.125Z",
+        "dateValid": true,
+        "status": "Scheduled"
+      },
+      "projectedWinner": null,
+      "projectedScore": {
+        "homeScore": 99.1,
+        "awayScore": 96.2
+      },
+      "moneylinePick": null,
+      "spreadPick": null,
+      "totalPick": null,
+      "confidence": 32,
+      "risk": "High",
+      "dataQuality": "C",
+      "reasonCodes": [
+        "MODEL_WIN_PROB_EDGE",
+        "HOME_COURT_ADVANTAGE",
+        "ODDS_MISSING_LIMITS_EDGE",
+        "NO_ACTIONABLE_EDGE"
+      ],
+      "modelVersion": "v1.6.0",
+      "decision": "PASS",
+      "edgeScore": 13,
+      "result": null,
+      "finalScore": null,
+      "wasCorrect": null,
+      "marginError": null,
+      "totalError": null,
+      "dataIssueNotes": null
     }
   ],
-  "modelVersion": "v1.5.0"
+  "modelVersion": "v1.6.0"
 }

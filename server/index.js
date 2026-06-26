@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const { ROOT } = require('./paths');
 
 const dataFetcher = require('./data-fetcher');
 const injuriesMod = require('./injuries');
@@ -25,11 +26,27 @@ const teamStatsMod = require('./team-stats');
 const playerStatsMod = require('./player-stats');
 
 const PORT = process.env.PORT || 3847;
-const ROOT = path.join(__dirname, '..');
 const app = express();
+
+/** Block direct access to backend/source paths (especially on Vercel static CDN). */
+const PRIVATE_PREFIXES = ['/server', '/scripts', '/node_modules', '/data'];
+const PRIVATE_FILES = new Set([
+  '/package.json',
+  '/package-lock.json',
+  '/Dockerfile',
+  '/render.yaml',
+  '/vercel.json',
+]);
 
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  const p = req.path;
+  if (PRIVATE_FILES.has(p) || PRIVATE_PREFIXES.some((prefix) => p === prefix || p.startsWith(`${prefix}/`))) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  next();
+});
 app.use(express.static(ROOT));
 
 function parseDays(value) {

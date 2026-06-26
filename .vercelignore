@@ -1,0 +1,9 @@
+ios/
+scripts/
+.idea/
+.github/
+dist/
+*.md
+SHARE.txt
+Dockerfile
+render.yaml

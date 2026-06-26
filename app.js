@@ -4,6 +4,7 @@
   const API = '';
   let state = {
     intelligence: null,
+    engineHealth: null,
     teams: [],
     injuries: null,
     journal: null,
@@ -37,6 +38,14 @@
   function setSource(text) {
     const el = $('#api-source');
     if (el) el.textContent = text;
+  }
+
+  function setEngineMeta(intel, health) {
+    const parts = [];
+    if (intel?.modelVersion) parts.push(`Engine ${intel.modelVersion}`);
+    if (health?.dataQualityEngine) parts.push(`DQ ${health.dataQualityEngine}`);
+    if (intel?.meta?.source) parts.push(`Source: ${intel.meta.source}`);
+    setSource(parts.length ? parts.join(' · ') : '—');
   }
 
   function switchTab(tab) {
@@ -255,6 +264,7 @@
       },
       meta: state.intelligence?.meta,
       games: state.intelligence?.games || [],
+      engineHealth: state.engineHealth,
     });
     SettingsView.bind(panel, {
       onSaveBankroll: async (local) => {
@@ -281,7 +291,14 @@
           body: JSON.stringify({
             homeKey: game.homeKey,
             awayKey: game.awayKey,
-            scenario: { setPlayerStatus: payload.player ? [{ player: payload.player, status: payload.playerStatus }] : [] },
+            spread: payload.spread,
+            total: payload.total,
+            scenario: {
+              neutralCourt: payload.neutralCourt || false,
+              setPlayerStatus: payload.player
+                ? [{ player: payload.player, status: payload.playerStatus }]
+                : [],
+            },
           }),
         });
       });
@@ -297,7 +314,7 @@
   async function refreshAll() {
     setMeta('Refreshing…');
     try {
-      const [intel, teams, injuries, journal, bankroll, accuracy, historyPayload, lineupWatch, gradeResult, scoreboard] = await Promise.all([
+      const [intel, teams, injuries, journal, bankroll, accuracy, historyPayload, lineupWatch, gradeResult, scoreboard, engineHealth] = await Promise.all([
         fetchJson('/api/intelligence?days=7'),
         fetchJson('/api/teams'),
         fetchJson('/api/injuries'),
@@ -312,8 +329,10 @@
           warning: err.message || 'Scoreboard unavailable',
           isLive: false,
         })),
+        fetchJson('/api/intelligence/health').catch(() => null),
       ]);
       state.intelligence = { ...intel, lineupWatch };
+      state.engineHealth = engineHealth;
       state.teams = teams.teams || [];
       state.injuries = injuries;
       state.journal = journal;
@@ -324,8 +343,9 @@
       state.scoreboardPlayersCache = {};
       state.scoreboardTeamDetails = {};
       AlertsUI.mountGlobalAlerts($('#global-alerts'), intel.alerts);
+      window.meepmap?.notifyAlerts?.(intel.alerts);
       setMeta(`Updated ${new Date().toLocaleTimeString()}`);
-      setSource(intel.meta?.source ? `Source: ${intel.meta.source}` : '—');
+      setEngineMeta(intel, engineHealth);
       renderActivePanel();
     } catch (err) {
       setMeta('Refresh failed — is the server running?');

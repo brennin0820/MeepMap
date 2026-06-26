@@ -6,10 +6,10 @@ const cache = require('./cache');
 const espn = require('./espn');
 const bbref = require('./bbref');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const { BUNDLED_DATA_DIR } = require('./paths');
 
 function readFallback(filename) {
-  const filePath = path.join(DATA_DIR, filename);
+  const filePath = path.join(BUNDLED_DATA_DIR, filename);
   const raw = fs.readFileSync(filePath, 'utf8');
   return JSON.parse(raw);
 }

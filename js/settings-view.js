@@ -3,6 +3,7 @@
  */
 (function (global) {
   const { escapeHtml } = global.AlertsUI || { escapeHtml: (s) => String(s ?? '') };
+  const IV = global.IntelligenceView;
 
   function pct(val) {
     return val != null ? `${val}%` : '—';
@@ -95,7 +96,7 @@
                   <tr class="${resultCls}">
                     <td>${escapeHtml(g.away || '?')} @ ${escapeHtml(g.home || '?')}</td>
                     <td>${escapeHtml(p.moneylinePick || '—')}</td>
-                    <td><span class="badge badge--decision badge--${(p.decision || 'pass').toLowerCase().replace(/_/g, '-')}">${escapeHtml(p.decision || '—')}</span></td>
+                    <td>${IV ? IV.renderDecisionBadge(p.decision) : `<span class="badge badge--decision badge--${(p.decision || 'pass').toLowerCase().replace(/_/g, '-')}">${escapeHtml(p.decision || '—')}</span>`}</td>
                     <td>${escapeHtml(p.confidence || '—')}</td>
                     <td>${result}</td>
                   </tr>`;
@@ -140,13 +141,40 @@
       </section>`;
   }
 
-  function render({ accuracy, history, bankroll, meta, games = [], selectedGameId = null } = {}) {
+  function renderEngineHealth(health) {
+    if (!health) return '';
+    const sources = health.sources || {};
+    const rows = [
+      { label: 'Engine status', value: health.status || 'unknown' },
+      { label: 'Model', value: health.modelVersion || health.model || '—' },
+      { label: 'Data quality', value: health.dataQualityEngine || '—' },
+      { label: 'ESPN', value: sources.espn || '—' },
+      { label: 'BBRef', value: sources.bbref || sources.basketballReference || '—' },
+      { label: 'Injuries', value: sources.injuries || '—' },
+      { label: 'Odds', value: sources.odds || '—' },
+    ];
+    return `
+      <section class="settings-card">
+        <h3 class="section-title">Intelligence Engine</h3>
+        <p class="settings-card__desc">Decision, insight, alert, and explanation engines — live health from the server.</p>
+        <dl class="engine-health">
+          ${rows.map((row) => `
+            <div class="engine-health__row">
+              <dt>${escapeHtml(row.label)}</dt>
+              <dd>${escapeHtml(String(row.value))}</dd>
+            </div>`).join('')}
+        </dl>
+      </section>`;
+  }
+
+  function render({ accuracy, history, bankroll, meta, games = [], selectedGameId = null, engineHealth = null } = {}) {
     return `
       <div class="settings-panel">
         <header class="panel-header">
           <h2 class="panel-title">Settings</h2>
           <p class="panel-desc">Accuracy tracking, journal, bankroll, and scenario tools.</p>
         </header>
+        ${renderEngineHealth(engineHealth)}
         ${renderAccuracyCard(accuracy)}
         ${renderJournal(history)}
         ${renderBankroll(bankroll)}
