@@ -3,6 +3,9 @@
   "version": "1.5.0",
   "description": "2026 WNBA Bet Predictor — decision-driven betting intelligence platform",
   "main": "server/index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node server/index.js",
     "dev": "node server/index.js",
