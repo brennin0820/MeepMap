@@ -146,6 +146,7 @@
           <footer class="game-card__footer">
             <button class="btn btn--sm btn--ghost" type="button" data-action="explain" data-game-id="${escapeHtml(id)}">Why?</button>
             <button class="btn btn--sm btn--ghost" type="button" data-action="whatif" data-game-id="${escapeHtml(id)}">What-if</button>
+            <button class="btn btn--sm btn--ghost" type="button" data-action="analyze" data-game-id="${escapeHtml(id)}">Analyze</button>
           </footer>` : ''}
       </article>`;
   }
@@ -398,6 +399,7 @@
       const gameId = btn.dataset.gameId;
       if (action === 'explain' && handlers.onExplain) handlers.onExplain(gameId);
       if (action === 'whatif' && handlers.onWhatIf) handlers.onWhatIf(gameId);
+      if (action === 'analyze' && handlers.onAnalyze) handlers.onAnalyze(gameId);
     });
   }
 

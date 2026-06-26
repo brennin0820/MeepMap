@@ -20,6 +20,7 @@
     teamsDetails: {},
     teamsPlayers: {},
     playingTodayKeys: null,
+    matchupPrefill: null,
   };
 
   async function fetchJson(path, options) {
@@ -102,6 +103,13 @@
     }
   }
 
+  function openMatchupAnalyzer(gameId) {
+    const game = state.intelligence?.games?.find((g) => g.id === gameId);
+    if (!game) return;
+    state.matchupPrefill = { away: game.away, home: game.home };
+    switchTab('matchup');
+  }
+
   function renderIntelligence() {
     const panel = $('#panel-intelligence');
     if (!panel) return;
@@ -118,6 +126,7 @@
         const sel = document.querySelector('#what-if-game');
         if (sel) sel.value = gameId;
       },
+      onAnalyze: openMatchupAnalyzer,
     });
   }
 
@@ -129,7 +138,7 @@
       state.gamesFilter = filter;
       renderGames();
     });
-    IntelligenceView.bindActions(panel, { onExplain: openExplanation, onWhatIf: () => switchTab('settings') });
+    IntelligenceView.bindActions(panel, { onExplain: openExplanation, onWhatIf: () => switchTab('settings'), onAnalyze: openMatchupAnalyzer });
   }
 
   async function loadTeamProfile(teamKey) {
@@ -311,6 +320,13 @@
         return html;
       }
     );
+    if (state.matchupPrefill) {
+      const awayEl = panel.querySelector('#matchup-away');
+      const homeEl = panel.querySelector('#matchup-home');
+      if (awayEl) awayEl.value = state.matchupPrefill.away;
+      if (homeEl) homeEl.value = state.matchupPrefill.home;
+      state.matchupPrefill = null;
+    }
   }
 
   function renderInjuries() {
