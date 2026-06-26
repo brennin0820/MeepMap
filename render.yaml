@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: meepmap-wnba-predictor
+    runtime: node
+    repo: https://github.com/brennin0820/MeepMap
+    branch: main
+    buildCommand: npm install
+    startCommand: node server/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true
