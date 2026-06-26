@@ -24,7 +24,8 @@
     "build:share": "node scripts/prepare-share.js",
     "test:engine": "node scripts/test-engine.js",
     "test:teams": "node scripts/test-teams-view.js",
-    "test:api": "node scripts/test-api.js"
+    "test:api": "node scripts/test-api.js",
+    "fetch:team-art": "node scripts/fetch-team-art.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

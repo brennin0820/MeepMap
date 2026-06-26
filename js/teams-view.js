@@ -180,6 +180,44 @@
 
   // ---- rendering ----------------------------------------------------------
 
+  function teamInitials(team) {
+    const name = String(team.name || team.key || '');
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    const key = String(team.key || '').toUpperCase();
+    return key.slice(0, 2) || '??';
+  }
+
+  function brandingStyle(branding) {
+    if (!branding?.colors) return '';
+    const c = branding.colors;
+    const vars = [];
+    if (c.primary) vars.push(`--team-primary:${c.primary}`);
+    if (c.secondary) vars.push(`--team-secondary:${c.secondary}`);
+    if (c.accent) vars.push(`--team-accent:${c.accent}`);
+    if (c.text) vars.push(`--team-text:${c.text}`);
+    return vars.length ? vars.join(';') : '';
+  }
+
+  function renderSigil(branding, team, sizeClass = 'team-sigil--lg') {
+    const style = brandingStyle(branding);
+    const styleAttr = style ? ` style="${style}"` : '';
+    const sigil = branding?.sigil;
+    const alt = escapeHtml(sigil?.alt || team.name || 'Team logo');
+
+    if (sigil?.kind === 'inline') {
+      return `<span class="team-sigil ${sizeClass}"${styleAttr} role="img" aria-label="${alt}">${sigil.value}</span>`;
+    }
+    if (sigil?.kind === 'local' || sigil?.kind === 'cdn') {
+      const src = escapeHtml(sigil.value);
+      return `<span class="team-sigil ${sizeClass}"${styleAttr}><img src="${src}" alt="${alt}" loading="lazy" /></span>`;
+    }
+    const initials = escapeHtml(teamInitials(team));
+    return `<span class="team-sigil team-sigil--initials ${sizeClass}"${styleAttr} aria-label="${escapeHtml(team.name || '')}">${initials}</span>`;
+  }
+
   function trendClass(label) {
     if (label === 'Rising') return 'team-pill--rising';
     if (label === 'Sliding') return 'team-pill--sliding';
@@ -355,6 +393,10 @@
     const trend = trendLabel(team);
     const health = healthLabel(team, model.injuries);
     const playingToday = todaySet.has(key.toLowerCase());
+    const branding = team.branding || null;
+    const branded = Boolean(branding?.hasBranding);
+    const cardStyle = branded ? brandingStyle(branding) : '';
+    const cardStyleAttr = cardStyle ? ` style="${cardStyle}"` : '';
 
     const badges = [
       `<span class="team-pill ${trendClass(trend)}">${escapeHtml(trend)}</span>`,
@@ -374,12 +416,18 @@
       .join('');
 
     return `
-      <article class="team-card${expanded ? ' team-card--expanded' : ''}" data-team-key="${escapeHtml(key.toLowerCase())}">
+      <article class="team-card${expanded ? ' team-card--expanded' : ''}${branded ? ' team-card--branded' : ''}" data-team-key="${escapeHtml(key.toLowerCase())}"${cardStyleAttr}>
+        ${branded ? '<span class="team-color-rail" aria-hidden="true"></span>' : ''}
         <button type="button" class="team-card__toggle" data-team-key="${escapeHtml(key.toLowerCase())}" aria-expanded="${expanded}">
           <div class="team-card__head">
             <div class="team-card__id">
-              <h3 class="team-card__name">${escapeHtml(team.name || key)}</h3>
-              <span class="team-card__record">${escapeHtml(team.record || '—')}</span>
+              <div class="team-badge">
+                ${renderSigil(branding, team)}
+                <div class="team-badge__name">
+                  <h3 class="team-card__name">${escapeHtml(team.name || key)}</h3>
+                  <span class="team-card__record">${escapeHtml(team.record || '—')}</span>
+                </div>
+              </div>
             </div>
             <div class="team-card__badges">${badges}</div>
           </div>
@@ -471,6 +519,10 @@
       filterTeams,
       sortKey,
       matchesSegment,
+      teamInitials,
+      brandingStyle,
+      renderSigil,
+      renderCard,
     },
   };
 })(window);

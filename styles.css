@@ -958,6 +958,13 @@ a { color: var(--accent-2); }
   overflow: hidden;
   transition: border-color 140ms ease;
 }
+.team-card--branded {
+  display: flex;
+  align-items: stretch;
+}
+.team-card--branded .team-sigil {
+  background: transparent;
+}
 .team-card--expanded { border-color: var(--accent); grid-column: 1 / -1; }
 .team-card__toggle {
   display: block;
@@ -968,6 +975,10 @@ a { color: var(--accent-2); }
   padding: 16px;
   cursor: pointer;
   color: inherit;
+}
+.team-card--branded .team-card__toggle {
+  flex: 1;
+  min-width: 0;
 }
 .team-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .team-card__name { margin: 0; font-size: 1.05rem; letter-spacing: -0.02em; }

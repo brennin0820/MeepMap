@@ -5,6 +5,7 @@ const path = require('path');
 const cache = require('./cache');
 const espn = require('./espn');
 const bbref = require('./bbref');
+const teamBranding = require('./team-branding');
 
 const { BUNDLED_DATA_DIR } = require('./paths');
 
@@ -84,7 +85,11 @@ async function getTeams() {
       }
       return result;
     }
-  ).then((result) => enrichTeamsFromFallback(result));
+  ).then((result) => {
+    result = enrichTeamsFromFallback(result);
+    result.teams = teamBranding.attachBrandingToTeams(result.teams);
+    return result;
+  });
 }
 
 function enrichTeamsFromFallback(result) {
