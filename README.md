@@ -47,6 +47,11 @@ This repo ships a [`render.yaml`](./render.yaml). In the Render dashboard choose
 and a 1 GB persistent disk mounted at `/var/data` (with `DATA_DIR=/var/data`)
 and deploys automatically. Health checks hit `/api/health`.
 
+The blueprint uses the paid `starter` plan because **persistent disks require a
+paid Render plan** — free web services have an ephemeral filesystem. To run on
+the free tier, set `plan: free` and remove the `disk:` block in `render.yaml`
+(journal/bankroll/history will then reset on each restart).
+
 ### Docker (Railway, Fly.io, Cloud Run, self-host)
 
 ```bash

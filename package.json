@@ -4,7 +4,7 @@
   "description": "2026 WNBA Bet Predictor — decision-driven betting intelligence platform",
   "main": "server/index.js",
   "engines": {
-    "node": ">=18"
+    "node": "^18 || ^20 || ^22"
   },
   "scripts": {
     "start": "node server/index.js",

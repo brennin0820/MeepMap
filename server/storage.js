@@ -69,7 +69,13 @@ function readJson(name, fallback) {
   seedIfMissing(name);
   try {
     return JSON.parse(fs.readFileSync(filePath(name), 'utf8'));
-  } catch {
+  } catch (err) {
+    // A SyntaxError means the file exists but is corrupt — warn so it is
+    // observable rather than being silently reset on the next write. A missing
+    // file (ENOENT) is normal on first run and stays quiet.
+    if (err instanceof SyntaxError) {
+      console.warn(`[storage] ${name} is corrupt and will be ignored: ${err.message}`);
+    }
     // DATA_DIR copy missing/unreadable — e.g. a read-only volume that could
     // not be seeded. Serve the bundled seed file before the empty default so
     // the app still shows shipped state (e.g. prediction history).
