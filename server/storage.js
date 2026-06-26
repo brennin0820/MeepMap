@@ -110,10 +110,14 @@ function writeJson(name, data) {
     } catch {
       /* ignore cleanup failure */
     }
-    writable = false;
+    // Latch persistence off only for read-only / permission errors — those
+    // won't recover within the session. Transient failures (disk full, I/O,
+    // interrupted) just fail this write and let the next one retry.
+    const readOnly = err.code === 'EROFS' || err.code === 'EACCES' || err.code === 'EPERM';
+    if (readOnly) writable = false;
     console.warn(
-      `[storage] Write failed for ${name} (${err.message}). ` +
-        'Persistence disabled for this session.'
+      `[storage] Write failed for ${name} (${err.message}).` +
+        (readOnly ? ' Persistence disabled for this session.' : ' Will retry on next write.')
     );
     return false;
   }
