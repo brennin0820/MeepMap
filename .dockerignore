@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+dist
+ios/build
+ios/dist
+.git
+.github
+.DS_Store
+.cursor
+.playwright-cli
+*.xcuserstate
+DerivedData

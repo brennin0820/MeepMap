@@ -1,23 +1,21 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+const storage = require('./storage');
 
-const JOURNAL_PATH = path.join(__dirname, '..', 'data', 'journal.json');
+const JOURNAL_FILE = 'journal.json';
 
 const RESULTS = ['pending', 'won', 'lost', 'push'];
 
 function loadJournal() {
-  try {
-    return JSON.parse(fs.readFileSync(JOURNAL_PATH, 'utf8'));
-  } catch {
-    return { entries: [], updatedAt: new Date().toISOString() };
-  }
+  return storage.readJson(JOURNAL_FILE, () => ({
+    entries: [],
+    updatedAt: new Date().toISOString(),
+  }));
 }
 
 function saveJournal(data) {
   data.updatedAt = new Date().toISOString();
-  fs.writeFileSync(JOURNAL_PATH, JSON.stringify(data, null, 2));
+  storage.writeJson(JOURNAL_FILE, data);
   return data;
 }
 
