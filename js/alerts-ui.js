@@ -52,11 +52,12 @@
   function renderAlertItem(alert) {
     const sev = normalizeSeverity(alert.severity);
     const type = alert.type || 'INFO';
+    const id = alert.id || [type, alert.gameId || alert.game || '', alert.message || alert.text || ''].join('|');
     const game = alert.gameId || alert.game
       ? `<span class="alert__game">${escapeHtml(alert.away && alert.home ? `${alert.away} @ ${alert.home}` : alert.gameId || '')}</span>`
       : '';
     return `
-      <li class="alert ${alertClass(sev)}" data-alert-type="${escapeHtml(type)}">
+      <li class="alert ${alertClass(sev)}" data-alert-type="${escapeHtml(type)}" data-alert-id="${escapeHtml(id)}">
         <span class="alert__icon" aria-hidden="true">${alertIcon(type)}</span>
         <div class="alert__body">
           <span class="alert__type">${escapeHtml(type.replace(/_/g, ' '))}</span>

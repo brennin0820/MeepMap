@@ -167,6 +167,44 @@
       </section>`;
   }
 
+  function desktopSetting(key, fallback) {
+    return localStorage.getItem(key) ?? fallback;
+  }
+
+  function renderDesktopSettings() {
+    if (!global.meepmap?.isDesktop) return '';
+    const autoLaunch = global.meepmap.getAutoLaunch?.() ? 'checked' : '';
+    return `
+      <section class="settings-card">
+        <h3 class="section-title">Desktop</h3>
+        <p class="settings-card__desc">Native refresh, notification, and startup behavior.</p>
+        <div class="form-row form-row--checkbox">
+          <label><input id="set-notif-enabled" type="checkbox" ${desktopSetting('meepmap_notifications_enabled', '1') === '1' ? 'checked' : ''}> Enable notifications</label>
+        </div>
+        <div class="form-row">
+          <label for="set-notif-severity">Minimum notification severity</label>
+          <select id="set-notif-severity">
+            <option value="high" ${desktopSetting('meepmap_notifications_min_severity', 'high') === 'high' ? 'selected' : ''}>High and Critical</option>
+            <option value="critical" ${desktopSetting('meepmap_notifications_min_severity', 'high') === 'critical' ? 'selected' : ''}>Critical only</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="set-refresh">Auto-refresh interval</label>
+          <select id="set-refresh">
+            <option value="180000" ${desktopSetting('meepmap_refresh_interval', '300000') === '180000' ? 'selected' : ''}>3 minutes</option>
+            <option value="300000" ${desktopSetting('meepmap_refresh_interval', '300000') === '300000' ? 'selected' : ''}>5 minutes</option>
+            <option value="600000" ${desktopSetting('meepmap_refresh_interval', '300000') === '600000' ? 'selected' : ''}>10 minutes</option>
+          </select>
+        </div>
+        <div class="form-row form-row--checkbox">
+          <label><input id="set-pause-hidden" type="checkbox" ${desktopSetting('meepmap_pause_when_hidden', '0') === '1' ? 'checked' : ''}> Pause refresh when hidden</label>
+        </div>
+        <div class="form-row form-row--checkbox">
+          <label><input id="set-autolaunch" type="checkbox" ${autoLaunch}> Open at login</label>
+        </div>
+      </section>`;
+  }
+
   function render({ accuracy, history, bankroll, meta, games = [], selectedGameId = null, engineHealth = null } = {}) {
     return `
       <div class="settings-panel">
@@ -174,6 +212,7 @@
           <h2 class="panel-title">Settings</h2>
           <p class="panel-desc">Accuracy tracking, journal, bankroll, and scenario tools.</p>
         </header>
+        ${renderDesktopSettings()}
         ${renderEngineHealth(engineHealth)}
         ${renderAccuracyCard(accuracy)}
         ${renderJournal(history)}
@@ -204,6 +243,16 @@
         }
       });
     }
+
+    const bindDesktop = (id, handler) => container.querySelector(`#${id}`)?.addEventListener('change', handler);
+    bindDesktop('set-notif-enabled', (e) => localStorage.setItem('meepmap_notifications_enabled', e.target.checked ? '1' : '0'));
+    bindDesktop('set-notif-severity', (e) => localStorage.setItem('meepmap_notifications_min_severity', e.target.value));
+    bindDesktop('set-refresh', (e) => {
+      localStorage.setItem('meepmap_refresh_interval', e.target.value);
+      global.startDesktopAutoRefresh?.();
+    });
+    bindDesktop('set-pause-hidden', (e) => localStorage.setItem('meepmap_pause_when_hidden', e.target.checked ? '1' : '0'));
+    bindDesktop('set-autolaunch', (e) => global.meepmap?.setAutoLaunch?.(e.target.checked));
   }
 
   global.SettingsView = { render, bind, renderAccuracyCard, renderJournal, renderBankroll };

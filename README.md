@@ -17,6 +17,31 @@ npm start
 
 The server listens on `PORT` (default `3847`).
 
+## Desktop app
+
+MeepMap ships two desktop paths. Pick based on need:
+
+| Path | Build | Output | When to use |
+| --- | --- | --- | --- |
+| **Electron** | `npm run electron:build:win` | `dist-electron/win-unpacked/MeepMap.exe` | Full app: system tray, native notifications, no browser needed |
+| **pkg** | `npm run build:exe` | `WNBA-Bet-Predictor.exe` | Lightweight single-exe; launches the browser. Good for quick sharing |
+
+### Run / develop
+
+- Dev: `npm run electron:dev`
+- Package for Windows: `npm run electron:build:win`
+- Zip for sharing: `npm run electron:build:zip`
+
+### Behavior
+
+- Closing the window hides it to the tray; quit from the tray menu.
+- Data persists at `%APPDATA%/MeepMap/data`; logs at `%APPDATA%/MeepMap/logs/main.log`.
+- The embedded server picks a free port automatically, starting at `3847`.
+
+### Code signing (Windows)
+
+Unsigned builds trigger SmartScreen warnings. To sign, obtain an Authenticode certificate, set `CSC_LINK` and `CSC_KEY_PASSWORD`, then enable `signAndEditExecutable` in the Windows build config. Until a cert is available this stays disabled and builds remain unsigned.
+
 ## Deploy as a web app
 
 The app is a standard long-running Node/Express service, so any host that runs

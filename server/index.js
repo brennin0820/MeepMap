@@ -40,6 +40,16 @@ const PRIVATE_FILES = new Set([
 
 app.use(cors());
 app.use(express.json());
+app.use((_req, res, next) => {
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "connect-src 'self'",
+  ].join('; '));
+  next();
+});
 app.use((req, res, next) => {
   const p = req.path;
   if (PRIVATE_FILES.has(p) || PRIVATE_PREFIXES.some((prefix) => p === prefix || p.startsWith(`${prefix}/`))) {

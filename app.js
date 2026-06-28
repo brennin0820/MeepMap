@@ -42,6 +42,7 @@
 
   function setEngineMeta(intel, health) {
     const parts = [];
+    if (window.meepmap?.isDesktop) parts.push(`Desktop v${window.meepmap.version}`);
     if (intel?.modelVersion) parts.push(`Engine ${intel.modelVersion}`);
     if (health?.dataQualityEngine) parts.push(`DQ ${health.dataQualityEngine}`);
     if (intel?.meta?.source) parts.push(`Source: ${intel.meta.source}`);
@@ -62,6 +63,62 @@
     });
     renderActivePanel();
   }
+
+  function normalizeSeverity(severity) {
+    const raw = String(severity || 'Info').toLowerCase();
+    if (raw === 'critical') return 'Critical';
+    if (raw === 'high') return 'High';
+    if (raw === 'medium' || raw === 'warning') return 'Medium';
+    if (raw === 'low') return 'Low';
+    return 'Info';
+  }
+
+  function alertId(alert) {
+    return alert.id || [alert.type || 'alert', alert.gameId || alert.game || '', alert.message || alert.text || ''].join('|');
+  }
+
+  function shouldNotifyDesktopAlert(alert) {
+    if (!window.meepmap?.isDesktop) return false;
+    if (localStorage.getItem('meepmap_notifications_enabled') === '0') return false;
+    const rank = { Info: 0, Low: 1, Medium: 2, High: 3, Critical: 4 };
+    const floor = localStorage.getItem('meepmap_notifications_min_severity') === 'critical' ? 'Critical' : 'High';
+    return rank[normalizeSeverity(alert?.severity)] >= rank[floor];
+  }
+
+  function notifyDesktopAlerts(alerts) {
+    const filtered = (alerts || []).filter(shouldNotifyDesktopAlert).map((alert) => ({
+      ...alert,
+      id: alertId(alert),
+      title: String(alert.type || 'MeepMap Alert').replace(/_/g, ' '),
+      body: alert.message || alert.text || '',
+      severity: normalizeSeverity(alert.severity),
+    }));
+    if (filtered.length) window.meepmap?.notifyAlerts?.(filtered);
+  }
+
+  function focusAlert(alertId) {
+    switchTab('intelligence');
+    requestAnimationFrame(() => {
+      if (!alertId) return;
+      const selector = `[data-alert-id="${CSS.escape(String(alertId))}"]`;
+      document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  let desktopRefreshTimer = null;
+  function getDesktopRefreshInterval() {
+    const value = Number(localStorage.getItem('meepmap_refresh_interval') || 300000);
+    return Number.isFinite(value) && value >= 60000 ? value : 300000;
+  }
+
+  window.startDesktopAutoRefresh = function startDesktopAutoRefresh() {
+    if (!window.meepmap?.isDesktop) return;
+    if (desktopRefreshTimer) clearInterval(desktopRefreshTimer);
+    desktopRefreshTimer = setInterval(() => {
+      if (localStorage.getItem('meepmap_pause_when_hidden') === '1' && document.hidden) return;
+      refreshAll();
+    }, getDesktopRefreshInterval());
+  };
 
   function renderActivePanel() {
     switch (state.activeTab) {
@@ -343,7 +400,7 @@
       state.scoreboardPlayersCache = {};
       state.scoreboardTeamDetails = {};
       AlertsUI.mountGlobalAlerts($('#global-alerts'), intel.alerts);
-      window.meepmap?.notifyAlerts?.(intel.alerts);
+      notifyDesktopAlerts(intel.alerts);
       setMeta(`Updated ${new Date().toLocaleTimeString()}`);
       setEngineMeta(intel, engineHealth);
       renderActivePanel();
@@ -357,6 +414,9 @@
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
   $('#btn-refresh')?.addEventListener('click', refreshAll);
+  window.meepmap?.onTrayRefresh?.(refreshAll);
+  window.meepmap?.onFocusAlert?.(focusAlert);
+  window.startDesktopAutoRefresh?.();
   $('#btn-grade')?.addEventListener('click', async () => {
     try {
       const result = await fetchJson('/api/grade?days=14');

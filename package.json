@@ -9,10 +9,11 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node server/index.js",
-    "electron:dev": "electron electron/main.js",
-    "electron:build": "electron-builder && node scripts/copy-launchers.js",
-    "electron:build:win": "electron-builder --win && node scripts/copy-launchers.js",
-    "electron:build:zip": "electron-builder --win zip && node scripts/copy-launchers.js",
+    "electron:dev": "electron desktop/main.js",
+    "build:server": "esbuild server/index.js --bundle --platform=node --target=node18 --outfile=dist-server/server.bundle.js",
+    "electron:build": "npm run build:server && electron-builder && node scripts/copy-launchers.js",
+    "electron:build:win": "npm run build:server && electron-builder --win && node scripts/copy-launchers.js",
+    "electron:build:zip": "npm run build:server && electron-builder --win zip && node scripts/copy-launchers.js",
     "electron:launchers": "node scripts/copy-launchers.js",
     "postinstall": "node scripts/install-electron-binary.js",
     "electron:icons": "node scripts/generate-app-icons.js",
@@ -23,15 +24,18 @@
     "make:exe": "node scripts/build-exe.js",
     "build:share": "node scripts/prepare-share.js",
     "test:engine": "node scripts/test-engine.js",
-    "test:api": "node scripts/test-api.js"
+    "test:api": "node scripts/test-api.js",
+    "smoke:electron": "node scripts/smoke-electron-build.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "electron-log": "^5.4.4",
     "express": "^4.21.2"
   },
   "devDependencies": {
     "electron": "^35.7.5",
     "electron-builder": "^25.1.8",
+    "esbuild": "^0.28.1",
     "pkg": "^5.8.1"
   },
   "build": {
@@ -43,52 +47,29 @@
       "buildResources": "build"
     },
     "files": [
-      "electron/**/*"
+      "desktop/**/*",
+      "!desktop/test-require.js",
+      "app.js",
+      "index.html",
+      "js/**/*",
+      "styles.css",
+      "data/**/*",
+      "assets/**/*",
+      "dist-server/server.bundle.js"
     ],
     "extraMetadata": {
-      "main": "electron/main.js"
+      "main": "desktop/main.js"
     },
     "extraFiles": [
       {
         "from": "launch",
         "to": ".",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
-    "extraResources": [
-      {
-        "from": "server",
-        "to": "app/server"
-      },
-      {
-        "from": "js",
-        "to": "app/js"
-      },
-      {
-        "from": "data",
-        "to": "app/data"
-      },
-      {
-        "from": "assets",
-        "to": "app/assets"
-      },
-      {
-        "from": "index.html",
-        "to": "app/index.html"
-      },
-      {
-        "from": "app.js",
-        "to": "app/app.js"
-      },
-      {
-        "from": "styles.css",
-        "to": "app/styles.css"
-      },
-      {
-        "from": "node_modules",
-        "to": "app/node_modules"
-      }
-    ],
+    "extraResources": [],
     "win": {
       "icon": "build/icon.ico",
       "signAndEditExecutable": false,

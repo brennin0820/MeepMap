@@ -7,6 +7,7 @@ const { Menu, dialog, app } = require('electron');
  */
 function buildApplicationMenu(getMainWindow) {
   const isMac = process.platform === 'darwin';
+  const isDev = !app.isPackaged || process.env.MEEPMAP_DEV === '1';
 
   /** @type {import('electron').MenuItemConstructorOptions[]} */
   const template = [
@@ -34,7 +35,7 @@ function buildApplicationMenu(getMainWindow) {
           : { role: 'quit', label: 'Quit' },
       ],
     },
-    {
+    ...(isDev ? [{
       label: 'View',
       submenu: [
         {
@@ -48,7 +49,7 @@ function buildApplicationMenu(getMainWindow) {
           click: () => getMainWindow()?.webContents.toggleDevTools(),
         },
       ],
-    },
+    }] : []),
     {
       label: 'Help',
       submenu: [
